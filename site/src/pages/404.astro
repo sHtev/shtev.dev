@@ -1,8 +1,29 @@
 ---
 import Terminal from '../layouts/Terminal.astro';
-// Built ahead of time, so the requested path isn't known here.
+// Built ahead of time, so the requested path isn't known here; the script fills it in.
 ---
 
 <Terminal title="Not found · shtev.dev" command="cd that-page/">
-  <p class="content">bash: that-page/: command not found</p>
+  <p class="content" data-missing>bash: that-page/: command not found</p>
 </Terminal>
+
+<script>
+  const MAX = 60;
+
+  function shownPath(): string {
+    let path = location.pathname;
+    try {
+      path = decodeURIComponent(path);
+    } catch {
+      // keep the raw path if it isn't valid percent-encoding
+    }
+    return path.length > MAX ? path.slice(0, MAX - 1) + '…' : path;
+  }
+
+  const path = shownPath();
+  const prompt = document.querySelector('[data-prompt]');
+  const message = document.querySelector('[data-missing]');
+  // textContent, never innerHTML: the path comes from the URL.
+  if (prompt) prompt.textContent = `cd ${path}`;
+  if (message) message.textContent = `bash: ${path}: command not found`;
+</script>

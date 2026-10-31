@@ -30,3 +30,40 @@ test('notFoundUsesTerminal', async ({ page }) => {
   await page.goto('/nope');
   await expect(page.getByText('command not found')).toBeVisible();
 });
+
+test('notFoundShowsPath', async ({ page }) => {
+  await page.goto('/nonsense');
+  await expect(page.locator('[data-prompt]')).toHaveText('cd /nonsense');
+  await expect(page.locator('.content')).toHaveText('bash: /nonsense: command not found');
+});
+
+test('notFoundTreatsPathAsText', async ({ page }) => {
+  // No encoded "/" here: astro preview rejects it (CloudFront doesn't).
+  await page.goto('/%3Cimg%20src%3Dx%3E');
+  await expect(page.locator('.content img')).toHaveCount(0);
+  await expect(page.locator('.content')).toContainText('/<img src=x>');
+});
+
+test('noInlineScripts', async ({ request }) => {
+  // CSP is script-src 'self': every script must be an external file.
+  for (const path of ['/', '/nonsense']) {
+    const html = await (await request.get(path)).text();
+    const inline = [...html.matchAll(/<script\b[^>]*>/g)].filter((m) => !/\ssrc=/.test(m[0]));
+    expect(inline, path).toEqual([]);
+  }
+});
+
+test('notFoundTruncatesLongPath', async ({ page }) => {
+  await page.goto('/' + 'a'.repeat(200));
+  const text = await page.locator('[data-prompt]').textContent();
+  expect(text!.length).toBeLessThanOrEqual('cd '.length + 60);
+  expect(text!.endsWith('…')).toBe(true);
+});
+
+test('notFoundWithoutJsIsGeneric', async ({ browser }) => {
+  const ctx = await browser.newContext({ javaScriptEnabled: false });
+  const page = await ctx.newPage();
+  await page.goto('/nonsense');
+  await expect(page.locator('.content')).toHaveText('bash: that-page/: command not found');
+  await ctx.close();
+});
