@@ -1,0 +1,8 @@
+---
+import Terminal from '../layouts/Terminal.astro';
+// Built ahead of time, so the requested path isn't known here.
+---
+
+<Terminal title="Not found · shtev.dev" command="cd that-page/">
+  <p class="content">bash: that-page/: command not found</p>
+</Terminal>

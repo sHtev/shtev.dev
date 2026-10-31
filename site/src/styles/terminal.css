@@ -1,0 +1,144 @@
+:root {
+  --fg: #7cfc7c;
+  --bg: #0b0f0b;
+  --dim: #3f8a3f;
+  --glow: 0 0 4px rgba(124, 252, 124, 0.45);
+  --pad-x: 28px;
+  --pad-y: 20px;
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'VT323', monospace;
+  font-size: 24px;
+  line-height: 1.15;
+  text-shadow: var(--glow);
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'calt' 0, 'dlig' 0;
+}
+
+/* The UA stylesheet gives <pre> its own monospace font, which would override VT323. */
+pre,
+code,
+kbd,
+samp {
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+main {
+  flex: 1;
+  padding: var(--pad-y) var(--pad-x) 0;
+}
+
+.dim {
+  color: var(--dim);
+}
+
+.sel {
+  background: var(--fg);
+  color: var(--bg);
+  text-shadow: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.header {
+  margin: 0 0 1.1em;
+  white-space: pre;
+}
+
+.prompt {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.1;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.cursor {
+  display: inline-block;
+  width: 0.55em;
+  background: var(--fg);
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.content {
+  margin-top: 0.6em;
+  max-width: 62ch;
+}
+
+.footer {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1ch;
+  padding: 0.6em var(--pad-x) var(--pad-y);
+  background: var(--bg);
+  white-space: pre;
+}
+
+.footer a {
+  color: var(--dim);
+  text-decoration: none;
+}
+
+.footer a:hover,
+.footer a:focus-visible {
+  color: var(--fg);
+}
+
+.footer .actions {
+  display: flex;
+  gap: 1.5ch;
+}
+
+.footer .actions a.sel {
+  color: var(--bg);
+}
+
+@media (max-width: 600px) {
+  :root {
+    --pad-x: 14px;
+    --pad-y: 12px;
+  }
+  body {
+    font-size: 20px;
+  }
+  .prompt {
+    font-size: 24px;
+    /* Room for a wrapped prompt so the content below doesn't jump. */
+    min-height: 2lh;
+  }
+  .header {
+    white-space: normal;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor {
+    animation: none;
+  }
+}

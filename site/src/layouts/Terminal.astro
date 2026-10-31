@@ -1,0 +1,53 @@
+---
+import '@fontsource/vt323';
+import '../styles/terminal.css';
+
+export interface Action {
+  label: string;
+  href: string;
+  download?: boolean;
+}
+
+interface Props {
+  title: string;
+  command?: string;
+  actions?: Action[];
+}
+
+const { title, command = '' } = Astro.props;
+const isHome = Astro.url.pathname === '/';
+const actions = Astro.props.actions ?? (isHome ? [] : [{ label: '[ back ]', href: '/' }]);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <main>
+      <p class="header dim">STEVE GILROY · platform / devops / ai</p>
+      <p class="prompt">
+        <span class="dim">shtev@dev:~$ </span><span data-prompt>{command}</span><span
+          class="cursor"
+          aria-hidden="true"> </span>
+      </p>
+      <slot />
+    </main>
+    <footer class="footer">
+      <a href="https://github.com/sHtev" rel="me">github.com/shtev</a>
+      <nav class="actions" aria-label="page actions">
+        {
+          actions.map((a) => (
+            <a href={a.href} download={a.download ? '' : undefined} data-action>
+              {a.label}
+            </a>
+          ))
+        }
+      </nav>
+    </footer>
+  </body>
+</html>
