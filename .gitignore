@@ -1,0 +1,25 @@
+# dependencies and build output
+node_modules/
+dist/
+.astro/
+site/test-results/
+site/playwright-report/
+
+# terraform
+.terraform/
+.terraform.lock.hcl.bak
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+
+# private material — never committed (see design: CV PDF and source photos stay private)
+assets/source/
+site/public/cv.pdf
+
+# local tooling / scratch
+.superpowers/
+.venv/
+__pycache__/
+.DS_Store
