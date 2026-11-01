@@ -89,13 +89,6 @@ a:focus-visible:not(.sel) {
   display: inline-block;
   width: 0.55em;
   background: var(--fg);
-  animation: blink 1s steps(1) infinite;
-}
-
-@keyframes blink {
-  50% {
-    opacity: 0;
-  }
 }
 
 .content {
@@ -122,6 +115,11 @@ a:focus-visible:not(.sel) {
 .footer a {
   color: var(--dim);
   text-decoration: none;
+}
+
+/* [ back ] comes first in the markup (and tab order) but sits on the right. */
+.footer .github {
+  order: -1;
 }
 
 .footer a:hover,
@@ -153,11 +151,5 @@ a:focus-visible:not(.sel) {
   }
   .header {
     white-space: normal;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cursor {
-    animation: none;
   }
 }

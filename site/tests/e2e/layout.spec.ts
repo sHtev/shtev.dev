@@ -67,3 +67,19 @@ test('notFoundWithoutJsIsGeneric', async ({ browser }) => {
   await expect(page.locator('.content')).toHaveText('bash: that-page/: command not found');
   await ctx.close();
 });
+
+test('cursorDoesNotBlink', async ({ page }) => {
+  await page.goto('/');
+  const anim = await page.locator('.prompt .cursor').evaluate((el) => getComputedStyle(el).animationName);
+  expect(anim).toBe('none');
+});
+
+test('backComesBeforeGithubInTabOrder', async ({ page }) => {
+  await page.goto('/about/');
+  const order = await page.locator('footer a').allTextContents();
+  expect(order.map((t) => t.trim())).toEqual(['[ back ]', 'github.com/shtev']);
+  // Visually, GitHub stays on the left and [ back ] on the right.
+  const back = (await page.getByRole('link', { name: '[ back ]' }).boundingBox())!;
+  const github = (await page.getByRole('link', { name: 'github.com/shtev' }).boundingBox())!;
+  expect(github.x).toBeLessThan(back.x);
+});
