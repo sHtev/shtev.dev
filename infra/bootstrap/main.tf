@@ -1,10 +1,18 @@
-# One-off: the S3 bucket that holds the main stack's Terraform state.
-# Applied once by hand (AWS_PROFILE=shtev-admin); its own state stays local and git-ignored.
+# One-off: the S3 bucket that holds Terraform state. Applied by hand (AWS_PROFILE=shtev-admin).
+# First apply ran with local state, then migrated into the bucket it created (key bootstrap/).
 
 terraform {
   required_version = ">= 1.10"
   required_providers {
     aws = { source = "hashicorp/aws", version = "~> 6.0" }
+  }
+
+  backend "s3" {
+    bucket       = "shtev-dev-tfstate-REDACTED"
+    key          = "bootstrap/terraform.tfstate"
+    region       = "eu-west-2"
+    encrypt      = true
+    use_lockfile = true
   }
 }
 
