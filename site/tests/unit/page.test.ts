@@ -137,6 +137,43 @@ describe('initPage', () => {
     expect(navigate).toHaveBeenCalledWith('/x/two/');
   });
 
+  it('backIsFocusedWhenTypingDone', async () => {
+    start();
+    await vi.runAllTimersAsync();
+    expect(document.activeElement).toBe(links()[1]);
+  });
+
+  it('focusingAnActionHighlightsOnlyIt', async () => {
+    start(0);
+    await vi.runAllTimersAsync();
+    links()[1].focus();
+    expect(links()[1].classList.contains('sel')).toBe(true);
+    expect(links()[0].classList.contains('sel')).toBe(false);
+  });
+
+  it('listPageFocusesFirstItemAndTabToBackMovesHighlight', async () => {
+    content.innerHTML = `<ul data-ls>
+      <li><a class="item" href="/x/one/" data-command="cat x/one.md">one</a></li></ul>`;
+    page = initPage({
+      contentEl: content,
+      actionsEl: actions,
+      defaultAction: 1,
+      navigate,
+      reducedMotion: false,
+      promptEl: document.createElement('span'),
+      listEl: content.querySelector('[data-ls]') as HTMLElement,
+    });
+    await vi.runAllTimersAsync();
+    const item = content.querySelector<HTMLElement>('.item')!;
+    expect(document.activeElement).toBe(item);
+    expect(item.classList.contains('sel')).toBe(true);
+    links()[1].focus();
+    expect(item.classList.contains('sel')).toBe(false);
+    expect(links()[1].classList.contains('sel')).toBe(true);
+    key('Enter');
+    expect(navigate).not.toHaveBeenCalledWith('/x/one/');
+  });
+
   it('pageWithoutContentHighlightsImmediately', () => {
     page = initPage({ contentEl: null, actionsEl: actions, defaultAction: 1, navigate, reducedMotion: false });
     expect(links()[1].classList.contains('sel')).toBe(true);

@@ -53,6 +53,18 @@ main {
   text-shadow: none;
 }
 
+/* The highlight is the focus indicator; any other focused link gets the same look. */
+.sel:focus,
+a:focus-visible {
+  outline: none;
+}
+
+a:focus-visible:not(.sel) {
+  background: var(--fg);
+  color: var(--bg);
+  text-shadow: none;
+}
+
 .hidden {
   display: none !important;
 }

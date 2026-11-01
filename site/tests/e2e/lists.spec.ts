@@ -37,3 +37,17 @@ test('projectExternalLink', async ({ page }) => {
   await page.goto('/projects/comics-tracker/');
   await expect(page.locator('a[href="https://spidey.comics-tracker.online"]')).toBeVisible();
 });
+
+test('tabMovesHighlightToBack', async ({ page }) => {
+  await page.goto('/case-studies/');
+  await firstItemSelected(page);
+  const back = page.getByRole('link', { name: '[ back ]' });
+  for (let i = 0; i < 10 && !(await back.evaluate((el) => el === document.activeElement)); i++) {
+    await page.keyboard.press('Tab');
+  }
+  await expect(back).toBeFocused();
+  await expect(back).toHaveClass(/sel/);
+  await expect(page.locator('[data-ls] .item.sel')).toHaveCount(0);
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL('/');
+});

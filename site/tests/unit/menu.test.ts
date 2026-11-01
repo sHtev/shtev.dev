@@ -94,6 +94,25 @@ describe('createSelectableList', () => {
     expect(onChoose).not.toHaveBeenCalled();
   });
 
+  it('arrowMovesFocusWithHighlight', () => {
+    key('ArrowDown');
+    expect(document.activeElement).toBe(items[1]);
+  });
+
+  it('focusMovesHighlight', () => {
+    items[2].focus();
+    expect(list.selected()).toBe(2);
+    expect(items[2].classList.contains('sel')).toBe(true);
+    expect(items[0].classList.contains('sel')).toBe(false);
+  });
+
+  it('clearRemovesHighlight', () => {
+    list.clear();
+    expect(items.some((el) => el.classList.contains('sel'))).toBe(false);
+    key('ArrowDown');
+    expect(list.selected()).toBe(1);
+  });
+
   it('destroyStopsListening', () => {
     list.destroy();
     key('ArrowDown');

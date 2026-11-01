@@ -47,7 +47,12 @@ export function initPage(opts: PageOptions): { destroy(): void } {
   const backHref = actions.find((a) => a.textContent?.trim() === '[ back ]')?.getAttribute('href') ?? '/';
   let typed = !opts.contentEl;
 
-  const highlight = () => actions.forEach((a, i) => a.classList.toggle('sel', i === selected));
+  const markAction = () => actions.forEach((a, i) => a.classList.toggle('sel', i === selected));
+  const clearActions = () => actions.forEach((a) => a.classList.remove('sel'));
+  const focusAction = () => {
+    markAction();
+    actions[selected]?.focus();
+  };
   const typing = opts.contentEl
     ? typeNodes(opts.contentEl, { ...CONTENT_TYPING, reducedMotion: opts.reducedMotion })
     : null;
@@ -57,12 +62,13 @@ export function initPage(opts: PageOptions): { destroy(): void } {
 
   const onTyped = () => {
     typed = true;
-    if (!opts.listEl) highlight();
+    if (!opts.listEl) focusAction();
     if (opts.listEl && opts.promptEl) {
       const promptEl = opts.promptEl;
       list = createSelectableList(opts.listEl, {
         itemSelector: '.item',
         numberKeys: false,
+        focusOnStart: true,
         onChoose(_index, el) {
           if (command) return;
           command = runCommand(promptEl, el.dataset.command ?? '', el.getAttribute('href') ?? '/', opts.navigate, opts.reducedMotion);
@@ -71,7 +77,9 @@ export function initPage(opts: PageOptions): { destroy(): void } {
     }
   };
   if (typing) typing.done.then(onTyped);
-  else highlight();
+  else focusAction();
+
+  const inActions = () => opts.actionsEl.contains(document.activeElement);
 
   const onKey = (e: KeyboardEvent) => {
     if (isTypingTarget(e.target) || e.altKey || e.ctrlKey || e.metaKey) return;
@@ -79,11 +87,13 @@ export function initPage(opts: PageOptions): { destroy(): void } {
       typing?.finish();
       return;
     }
-    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+    // With a list on the page, the footer actions only take keys once they have focus.
+    const actionsActive = !list || inActions();
+    if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && actionsActive) {
       const step = e.key === 'ArrowRight' ? 1 : -1;
       selected = (selected + step + actions.length) % actions.length;
-      highlight();
-    } else if (e.key === 'Enter' && actions[selected] && !list) {
+      focusAction();
+    } else if (e.key === 'Enter' && actions[selected] && actionsActive) {
       actions[selected].click();
     } else if (e.key === 'Escape' || e.key === 'Backspace') {
       opts.navigate(backHref);
@@ -95,7 +105,21 @@ export function initPage(opts: PageOptions): { destroy(): void } {
 
   const onContentClick = () => typing?.finish();
 
+  // Whatever has focus is the one highlight on the page.
+  const onFocus = (e: FocusEvent) => {
+    const index = actions.indexOf(e.target as HTMLElement);
+    if (index >= 0) {
+      selected = index;
+      markAction();
+      list?.clear();
+    } else {
+      clearActions();
+      if (!opts.listEl?.contains(e.target as Node)) list?.clear();
+    }
+  };
+
   document.addEventListener('keydown', onKey);
+  document.addEventListener('focusin', onFocus);
   opts.contentEl?.addEventListener('click', onContentClick);
 
   return {
@@ -104,6 +128,7 @@ export function initPage(opts: PageOptions): { destroy(): void } {
       command?.cancel();
       list?.destroy();
       document.removeEventListener('keydown', onKey);
+      document.removeEventListener('focusin', onFocus);
       opts.contentEl?.removeEventListener('click', onContentClick);
     },
   };
@@ -125,6 +150,7 @@ export function initLanding(opts: LandingOptions): { destroy(): void } {
   const list = createSelectableList(opts.menuEl, {
     itemSelector: '.item',
     numberKeys: true,
+    focusOnStart: true,
     onChoose(_index, el) {
       if (command) return;
       rotation.stop();
@@ -132,11 +158,18 @@ export function initLanding(opts: LandingOptions): { destroy(): void } {
     },
   });
 
+  // Focus elsewhere (e.g. the GitHub link) takes the highlight away from the menu.
+  const onFocus = (e: FocusEvent) => {
+    if (!opts.menuEl.contains(e.target as Node)) list.clear();
+  };
+  document.addEventListener('focusin', onFocus);
+
   return {
     destroy() {
       rotation.stop();
       command?.cancel();
       list.destroy();
+      document.removeEventListener('focusin', onFocus);
     },
   };
 }
