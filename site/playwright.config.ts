@@ -6,6 +6,8 @@ export default defineConfig({
   testDir: 'tests/e2e',
   fullyParallel: true,
   reporter: 'list',
+  // Long pages take a few seconds to type out, more when many tests run in parallel.
+  expect: { timeout: 10_000 },
   use: { baseURL: `http://localhost:${PORT}` },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   // Tests run against the production build, as deployed. --ignore-lock keeps
