@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { initPage } from '../../src/scripts/page';
+import { initLanding, initPage } from '../../src/scripts/page';
 import { typeNodes } from '../../src/scripts/typing';
 
 function key(key: string, target: EventTarget = document.body) {
@@ -220,5 +220,33 @@ describe('initPage', () => {
   it('pageWithoutContentHighlightsImmediately', () => {
     page = initPage({ contentEl: null, actionsEl: actions, defaultAction: 1, navigate, reducedMotion: false });
     expect(links()[1].classList.contains('sel')).toBe(true);
+  });
+});
+
+describe('initLanding', () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  it('cursorDisappearsOnceCommandRuns', async () => {
+    document.body.innerHTML = `
+      <p><span id="prompt"></span><span id="cursor" class="cursor"> </span></p>
+      <nav class="menu"><a class="item" href="/about/" data-command="cat about.md">1. about</a></nav>`;
+    const navigate = vi.fn();
+    const cursorEl = document.getElementById('cursor')!;
+    const landing = initLanding({
+      promptEl: document.getElementById('prompt')!,
+      menuEl: document.querySelector('nav.menu') as HTMLElement,
+      cursorEl,
+      lines: ['hello'],
+      navigate,
+      reducedMotion: false,
+    });
+    expect(cursorEl.classList.contains('hidden')).toBe(false);
+    key('Enter');
+    await vi.runAllTimersAsync();
+    expect(document.getElementById('prompt')!.textContent).toBe('cat about.md');
+    expect(cursorEl.classList.contains('hidden')).toBe(true);
+    expect(navigate).toHaveBeenCalledWith('/about/');
+    landing.destroy();
   });
 });

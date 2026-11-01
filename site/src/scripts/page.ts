@@ -14,10 +14,18 @@ function isTypingTarget(target: EventTarget | null): boolean {
 }
 
 /** Types `command` into the prompt, pauses as if Enter was pressed, then navigates. */
-function runCommand(promptEl: HTMLElement, command: string, href: string, navigate: Navigate, reducedMotion: boolean) {
+function runCommand(
+  promptEl: HTMLElement,
+  command: string,
+  href: string,
+  navigate: Navigate,
+  reducedMotion: boolean,
+  cursorEl?: HTMLElement | null,
+) {
   let pending: ReturnType<typeof setTimeout> | undefined;
   const typing = typeInto(promptEl, command, { msPerTick: COMMAND_MS_PER_CHAR, charsPerTick: 1, reducedMotion });
   typing.done.then(() => {
+    cursorEl?.classList.add('hidden'); // the command has been "entered"
     pending = setTimeout(() => navigate(href), reducedMotion ? 0 : ENTER_PAUSE_MS);
   });
   return {
@@ -151,6 +159,7 @@ export function initPage(opts: PageOptions): { destroy(): void } {
 export interface LandingOptions {
   promptEl: HTMLElement;
   menuEl: HTMLElement;
+  cursorEl?: HTMLElement | null;
   lines: string[];
   navigate: Navigate;
   reducedMotion: boolean;
@@ -168,7 +177,14 @@ export function initLanding(opts: LandingOptions): { destroy(): void } {
     onChoose(_index, el) {
       if (command) return;
       rotation.stop();
-      command = runCommand(opts.promptEl, el.dataset.command ?? '', el.getAttribute('href') ?? '/', opts.navigate, opts.reducedMotion);
+      command = runCommand(
+        opts.promptEl,
+        el.dataset.command ?? '',
+        el.getAttribute('href') ?? '/',
+        opts.navigate,
+        opts.reducedMotion,
+        opts.cursorEl,
+      );
     },
   });
 

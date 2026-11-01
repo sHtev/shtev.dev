@@ -73,3 +73,15 @@ test('reducedMotionNoTyping', async ({ browser }) => {
   await expect(page.getByRole('link', { name: '[ back ]' })).toHaveClass(/sel/);
   await ctx.close();
 });
+
+test('noCursorOnContentPages', async ({ page }) => {
+  await page.goto('/about/');
+  await expect(page.locator('.prompt .cursor')).toHaveCount(0);
+  await page.goto('/case-studies/');
+  await expect(page.locator('.prompt .cursor')).toHaveCount(0);
+});
+
+test('cursorOnHomePage', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.prompt .cursor')).toBeVisible();
+});

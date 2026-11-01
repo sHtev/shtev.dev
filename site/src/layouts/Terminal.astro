@@ -36,9 +36,9 @@ const defaultAction = Astro.props.defaultAction ?? actions.length - 1;
     <main>
       <p class="header dim">STEVE GILROY · platform / devops / ai</p>
       <p class="prompt">
-        <span class="dim">shtev@dev:~$ </span><span data-prompt>{command}</span><span
-          class="cursor"
-          aria-hidden="true"> </span>
+        <span class="dim">shtev@dev:~$ </span><span data-prompt>{command}</span>{
+          isHome && <span class="cursor" data-cursor aria-hidden="true"> </span>
+        }
       </p>
       <slot />
     </main>
@@ -83,7 +83,7 @@ const defaultAction = Astro.props.defaultAction ?? actions.length - 1;
     const contact = form && initContactFlow(form);
 
     const page = menuEl
-      ? initLanding({ promptEl, menuEl, lines, navigate, reducedMotion })
+      ? initLanding({ promptEl, menuEl, lines, navigate, reducedMotion, cursorEl: document.querySelector<HTMLElement>('[data-cursor]') })
       : initPage({
           contentEl: document.querySelector<HTMLElement>('[data-content]'),
           actionsEl,
