@@ -39,6 +39,7 @@ a {
 }
 
 main {
+  position: relative;
   flex: 1;
   padding: var(--pad-y) var(--pad-x) 0;
 }

@@ -61,6 +61,7 @@ const defaultAction = Astro.props.defaultAction ?? actions.length - 1;
   import { navigate } from 'astro:transitions/client';
   import lines from '../content/prompt-lines.json';
   import { initLanding, initPage } from '../scripts/page';
+  import { scanIn } from '../scripts/portrait';
   import { prefersReducedMotion } from '../scripts/typing';
 
   let teardown: (() => void) | undefined;
@@ -73,8 +74,12 @@ const defaultAction = Astro.props.defaultAction ?? actions.length - 1;
     const menuEl = document.querySelector<HTMLElement>('nav.menu');
     const actionsEl = document.querySelector<HTMLElement>('nav.actions')!;
 
-    teardown = menuEl
-      ? initLanding({ promptEl, menuEl, lines, navigate, reducedMotion }).destroy
+    // The portrait is rendered in full for no-JS visitors; re-draw it row by row.
+    const portrait = document.querySelector<HTMLElement>('[data-portrait] pre');
+    const scan = portrait && scanIn(portrait, (portrait.textContent ?? '').split('\n'), { msPerRow: 18, reducedMotion });
+
+    const page = menuEl
+      ? initLanding({ promptEl, menuEl, lines, navigate, reducedMotion })
       : initPage({
           contentEl: document.querySelector<HTMLElement>('[data-content]'),
           actionsEl,
@@ -83,6 +88,10 @@ const defaultAction = Astro.props.defaultAction ?? actions.length - 1;
           reducedMotion,
           listEl: document.querySelector<HTMLElement>('[data-ls]'),
           promptEl,
-        }).destroy;
+        });
+    teardown = () => {
+      page.destroy();
+      scan?.stop();
+    };
   });
 </script>

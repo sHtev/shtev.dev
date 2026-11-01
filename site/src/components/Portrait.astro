@@ -1,0 +1,48 @@
+---
+import portrait from '../assets/portrait.txt?raw';
+---
+
+<figure class="portrait" data-portrait role="img" aria-label="ASCII-art portrait of Steve Gilroy">
+  <div class="bar" aria-hidden="true">portrait.txt</div>
+  <pre aria-hidden="true">{portrait.trimEnd()}</pre>
+</figure>
+
+<style>
+  .portrait {
+    position: absolute;
+    top: var(--pad-y);
+    right: var(--pad-x);
+    margin: 0;
+    border: 1px solid var(--dim);
+    background: #050805;
+  }
+
+  .bar {
+    padding: 0 0.5em;
+    border-bottom: 1px solid var(--dim);
+    color: var(--dim);
+    font-size: 18px;
+    white-space: pre;
+  }
+
+  /* Small characters plus layered glow blur the ASCII into a soft CRT picture. */
+  pre {
+    margin: 0;
+    padding: 8px 10px;
+    font-size: 5.5px;
+    line-height: 1;
+    min-width: calc(120 * 0.4 * 5.5px);
+    min-height: calc(60 * 5.5px);
+    text-shadow:
+      0 0 1.5px rgba(124, 252, 124, 1),
+      0 0 4px rgba(124, 252, 124, 0.75),
+      0 0 9px rgba(124, 252, 124, 0.45),
+      0 0 16px rgba(124, 252, 124, 0.2);
+  }
+
+  @media (max-width: 860px) {
+    .portrait {
+      display: none;
+    }
+  }
+</style>

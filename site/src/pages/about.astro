@@ -1,5 +1,6 @@
 ---
 import { getEntry, render } from 'astro:content';
+import Portrait from '../components/Portrait.astro';
 import Terminal from '../layouts/Terminal.astro';
 
 const entry = (await getEntry('pages', 'about'))!;
@@ -7,5 +8,19 @@ const { Content } = await render(entry);
 ---
 
 <Terminal title="About · Steve Gilroy" command={entry.data.command}>
-  <div class="content" data-content><Content /></div>
+  <Portrait />
+  <div class="content with-portrait" data-content><Content /></div>
 </Terminal>
+
+<style>
+  /* Leave room for the portrait panel (about 300px) when it's shown. */
+  .with-portrait {
+    max-width: min(62ch, calc(100% - 330px));
+  }
+
+  @media (max-width: 860px) {
+    .with-portrait {
+      max-width: 62ch;
+    }
+  }
+</style>
