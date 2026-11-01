@@ -15,7 +15,7 @@ Led a development team building Rails and React applications; DevOps, security, 
 **2013–2019** · Lead Developer, Isotoma\
 Django and React client projects; AWS and Kubernetes; cloud migrations; serverless AWS back ends (Lambda, DynamoDB), including document-processing pipelines.
 
-**2006–2013** · Research Fellow / Senior Lecturer, Teesside University
+**2005–2013** · Researcher and lecturer, Newcastle University and Teesside University
 
 **Education** · University of York\
 PhD, Human-Computer Interaction\
