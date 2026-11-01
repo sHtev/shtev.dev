@@ -1,0 +1,12 @@
+---
+import { getCollection } from 'astro:content';
+import Terminal from '../../layouts/Terminal.astro';
+
+const entries = (await getCollection('caseStudies')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Terminal title="Case studies · Steve Gilroy" command="ls case-studies/">
+  <ul class="content" data-content>
+    {entries.map((e) => <li><a href={`/case-studies/${e.id}/`}>{e.id}</a> {e.data.summary}</li>)}
+  </ul>
+</Terminal>

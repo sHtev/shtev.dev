@@ -14,6 +14,51 @@ export function prefersReducedMotion(): boolean {
   return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 }
 
+/** Types out every text node under `root` in document order, keeping the markup. */
+export function typeNodes(root: HTMLElement, opts: TypingOptions): Typing {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes: Text[] = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode as Text);
+  const texts = nodes.map((n) => n.data);
+
+  let resolve!: () => void;
+  const done = new Promise<void>((r) => (resolve = r));
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let node = 0;
+  let shown = 0;
+
+  const finish = () => {
+    clearTimeout(timer);
+    nodes.forEach((n, i) => (n.data = texts[i]));
+    resolve();
+  };
+
+  const tick = () => {
+    let budget = opts.charsPerTick;
+    while (budget > 0 && node < nodes.length) {
+      const take = Math.min(budget, texts[node].length - shown);
+      shown += take;
+      budget -= take;
+      nodes[node].data = texts[node].slice(0, shown);
+      if (shown === texts[node].length) {
+        node++;
+        shown = 0;
+      }
+    }
+    if (node < nodes.length) timer = setTimeout(tick, opts.msPerTick);
+    else resolve();
+  };
+
+  if (opts.reducedMotion || nodes.length === 0) {
+    finish();
+  } else {
+    nodes.forEach((n) => (n.data = ''));
+    timer = setTimeout(tick, opts.msPerTick);
+  }
+
+  return { done, finish, cancel: () => clearTimeout(timer) };
+}
+
 /** Writes `text` into `el` a few characters at a time. */
 export function typeInto(el: HTMLElement, text: string, opts: TypingOptions): Typing {
   let resolve!: () => void;

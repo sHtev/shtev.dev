@@ -1,0 +1,12 @@
+---
+import { getCollection } from 'astro:content';
+import Terminal from '../../layouts/Terminal.astro';
+
+const entries = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Terminal title="Projects · Steve Gilroy" command="ls projects/">
+  <ul class="content" data-content>
+    {entries.map((e) => <li><a href={`/projects/${e.id}/`}>{e.id}</a> {e.data.summary}</li>)}
+  </ul>
+</Terminal>

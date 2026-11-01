@@ -1,6 +1,7 @@
 ---
 import '@fontsource/vt323';
 import '../styles/terminal.css';
+import { ClientRouter } from 'astro:transitions';
 
 export interface Action {
   label: string;
@@ -12,11 +13,14 @@ interface Props {
   title: string;
   command?: string;
   actions?: Action[];
+  /** Index of the action highlighted once the content has typed out; defaults to the last. */
+  defaultAction?: number;
 }
 
 const { title, command = '' } = Astro.props;
 const isHome = Astro.url.pathname === '/';
 const actions = Astro.props.actions ?? (isHome ? [] : [{ label: '[ back ]', href: '/' }]);
+const defaultAction = Astro.props.defaultAction ?? actions.length - 1;
 ---
 
 <!doctype html>
@@ -26,6 +30,7 @@ const actions = Astro.props.actions ?? (isHome ? [] : [{ label: '[ back ]', href
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
+    <ClientRouter fallback="swap" />
   </head>
   <body>
     <main>
@@ -39,7 +44,7 @@ const actions = Astro.props.actions ?? (isHome ? [] : [{ label: '[ back ]', href
     </main>
     <footer class="footer">
       <a href="https://github.com/sHtev" rel="me">github.com/shtev</a>
-      <nav class="actions" aria-label="page actions">
+      <nav class="actions" aria-label="page actions" data-default-action={defaultAction}>
         {
           actions.map((a) => (
             <a href={a.href} download={a.download ? '' : undefined} data-action>
@@ -51,3 +56,31 @@ const actions = Astro.props.actions ?? (isHome ? [] : [{ label: '[ back ]', href
     </footer>
   </body>
 </html>
+
+<script>
+  import { navigate } from 'astro:transitions/client';
+  import lines from '../content/prompt-lines.json';
+  import { initLanding, initPage } from '../scripts/page';
+  import { prefersReducedMotion } from '../scripts/typing';
+
+  let teardown: (() => void) | undefined;
+
+  // Runs on first load and after every client-side navigation.
+  document.addEventListener('astro:page-load', () => {
+    teardown?.();
+    const reducedMotion = prefersReducedMotion();
+    const promptEl = document.querySelector<HTMLElement>('[data-prompt]')!;
+    const menuEl = document.querySelector<HTMLElement>('nav.menu');
+    const actionsEl = document.querySelector<HTMLElement>('nav.actions')!;
+
+    teardown = menuEl
+      ? initLanding({ promptEl, menuEl, lines, navigate, reducedMotion }).destroy
+      : initPage({
+          contentEl: document.querySelector<HTMLElement>('[data-content]'),
+          actionsEl,
+          defaultAction: Number(actionsEl.dataset.defaultAction ?? 0),
+          navigate,
+          reducedMotion,
+        }).destroy;
+  });
+</script>

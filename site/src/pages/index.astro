@@ -1,5 +1,10 @@
 ---
+import Menu from '../components/Menu.astro';
+import lines from '../content/prompt-lines.json';
 import Terminal from '../layouts/Terminal.astro';
 ---
 
-<Terminal title="Steve Gilroy · shtev.dev" />
+<!-- First line shown statically for no-JS visitors; the script takes over the prompt. -->
+<Terminal title="Steve Gilroy · shtev.dev" command={lines[0]}>
+  <Menu />
+</Terminal>

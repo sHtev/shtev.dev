@@ -1,0 +1,15 @@
+---
+import { getEntry, render } from 'astro:content';
+import Terminal from '../layouts/Terminal.astro';
+
+const entry = (await getEntry('pages', 'cv'))!;
+const { Content } = await render(entry);
+const actions = [
+  { label: '[ download cv.pdf ]', href: '/cv.pdf', download: true },
+  { label: '[ back ]', href: '/' },
+];
+---
+
+<Terminal title="CV · Steve Gilroy" command={entry.data.command} actions={actions} defaultAction={0}>
+  <div class="content" data-content><Content /></div>
+</Terminal>
