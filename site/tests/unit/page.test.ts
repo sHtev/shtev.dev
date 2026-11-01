@@ -20,6 +20,17 @@ describe('typeNodes', () => {
     expect(root.innerHTML).toBe('<p><b>ab</b>cd</p><p>ef</p>');
   });
 
+  it('reservesFullHeightWhileTyping', async () => {
+    const root = document.createElement('div');
+    root.innerHTML = '<p>hello</p>';
+    root.getBoundingClientRect = () => ({ height: 120 }) as DOMRect;
+    const typing = typeNodes(root, { msPerTick: 8, charsPerTick: 1, reducedMotion: false });
+    expect(root.style.minHeight).toBe('120px');
+    typing.finish();
+    await typing.done;
+    expect(root.style.minHeight).toBe('');
+  });
+
   it('finishRestoresEverything', () => {
     const root = document.createElement('div');
     root.innerHTML = '<p>hello</p><p>world</p>';
@@ -150,6 +161,14 @@ describe('initPage', () => {
     start();
     await vi.runAllTimersAsync();
     expect(document.activeElement).toBe(links()[1]);
+  });
+
+  it('focusingBackDoesNotScroll', async () => {
+    const focus = vi.spyOn(HTMLElement.prototype, 'focus');
+    start();
+    await vi.runAllTimersAsync();
+    expect(focus).toHaveBeenCalledWith({ preventScroll: true });
+    focus.mockRestore();
   });
 
   it('focusingAnActionHighlightsOnlyIt', async () => {

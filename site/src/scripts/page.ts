@@ -62,7 +62,7 @@ export function initPage(opts: PageOptions): { destroy(): void } {
   const clearActions = () => actions.forEach((a) => a.classList.remove('sel'));
   const focusAction = () => {
     markAction();
-    actions[selected]?.focus();
+    actions[selected]?.focus({ preventScroll: true }); // the footer is always on screen
   };
   const typing = opts.contentEl
     ? typeNodes(opts.contentEl, { ...CONTENT_TYPING, reducedMotion: opts.reducedMotion })

@@ -29,3 +29,15 @@ test('portraitDoesNotCoverText', async ({ page }) => {
   const text = (await page.locator('[data-content]').boundingBox())!;
   expect(text.x + text.width).toBeLessThanOrEqual(panel.x);
 });
+
+test('portraitDoesNotJumpWhileTextTypes', async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 420 });
+  await page.goto('/about/');
+  const panel = page.getByRole('img', { name: label });
+  const before = (await panel.boundingBox())!;
+  await expect(page.getByRole('link', { name: '[ back ]' })).toHaveClass(/sel/); // typing finished
+  const after = (await panel.boundingBox())!;
+  expect(after.y).toBe(before.y);
+  expect(after.x).toBe(before.x);
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
+});

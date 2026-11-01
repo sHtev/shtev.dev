@@ -27,9 +27,13 @@ export function typeNodes(root: HTMLElement, opts: TypingOptions): Typing {
   let node = 0;
   let shown = 0;
 
+  // Hold the final height while typing, so the page (and its scrollbar) doesn't grow as it types.
+  const release = () => (root.style.minHeight = '');
+
   const finish = () => {
     clearTimeout(timer);
     nodes.forEach((n, i) => (n.data = texts[i]));
+    release();
     resolve();
   };
 
@@ -46,12 +50,16 @@ export function typeNodes(root: HTMLElement, opts: TypingOptions): Typing {
       }
     }
     if (node < nodes.length) timer = setTimeout(tick, opts.msPerTick);
-    else resolve();
+    else {
+      release();
+      resolve();
+    }
   };
 
   if (opts.reducedMotion || nodes.length === 0) {
     finish();
   } else {
+    root.style.minHeight = `${root.getBoundingClientRect().height}px`;
     nodes.forEach((n) => (n.data = ''));
     timer = setTimeout(tick, opts.msPerTick);
   }

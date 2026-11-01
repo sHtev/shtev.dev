@@ -11,6 +11,8 @@ html {
   background: var(--bg);
   /* Keep focused elements clear of the sticky footer when the browser scrolls to them. */
   scroll-padding-bottom: 4em;
+  /* Room for the scrollbar is always kept, so it can't shift the layout when it appears. */
+  scrollbar-gutter: stable;
 }
 
 body {
