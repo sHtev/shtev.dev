@@ -16,8 +16,14 @@ variable "budget_email" {
   sensitive   = true
 }
 
-variable "monthly_budget_usd" {
-  description = "Monthly cost budget; alerts at 80% actual and 100% forecast."
+variable "account_budget_usd" {
+  description = "Whole-account monthly budget (the account already runs ~$3.30/month of other things)."
+  type        = number
+  default     = 8
+}
+
+variable "site_budget_usd" {
+  description = "Monthly budget for resources tagged Project = shtev.dev."
   type        = number
   default     = 2
 }
