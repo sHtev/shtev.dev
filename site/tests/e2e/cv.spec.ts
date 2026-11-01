@@ -27,3 +27,13 @@ test('cvScrollsWithStickyFooter', async ({ page }) => {
   await expect(page.getByRole('link', { name: '[ download cv.pdf ]' })).toBeInViewport();
   await expect(page.getByRole('link', { name: '[ back ]' })).toBeInViewport();
 });
+
+test('cvRoleTitleOnItsOwnLine', async ({ page }) => {
+  await page.goto('/cv/');
+  await expect(page.getByRole('link', { name: '[ download cv.pdf ]' })).toHaveClass(/sel/);
+  // Each "years · role, company" line ends in a line break before its description.
+  const html = await page.locator('[data-content]').innerHTML();
+  for (const role of ['Senior DevOps Engineer, Isotoma', 'Senior Software Engineer, Raspberry Pi Foundation', 'Lead Developer, Isotoma']) {
+    expect(html, role).toMatch(new RegExp(`${role}\\s*<br>`));
+  }
+});
