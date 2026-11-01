@@ -4,7 +4,7 @@ command: cat about.md
 draft: true
 ---
 
-I'm Steve, a senior platform and DevOps engineer based in York, with 13 years of commercial software delivery and a full stack background.
+I'm Steve, a senior platform and DevOps engineer based near York, with 13 years of commercial software delivery and a full stack background.
 
 I build and run cloud platforms on AWS and Azure: Kubernetes with GitOps, infrastructure as code in Terraform and AWS CDK, CI/CD, and the monitoring, backup and disaster recovery that keep them reliable. I've provided the platform for LLM chat and RAG search using Amazon Bedrock, and I write AI agent skills that automate everyday engineering work.
 

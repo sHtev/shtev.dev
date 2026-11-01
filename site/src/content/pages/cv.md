@@ -4,7 +4,7 @@ command: open cv.pdf
 draft: true
 ---
 
-Senior DevOps engineer · 13 years in commercial software delivery · York, UK (remote)
+Senior DevOps engineer · 13 years in commercial software delivery · near York, UK (remote)
 
 **2023–now** · Senior DevOps Engineer, Isotoma\
 Kubernetes on EKS and AKS with GitOps; Terraform and AWS CDK; SRE and monthly service reviews for a portfolio of 10 clients; serverless AWS systems; backup and disaster recovery; AI platform work with Amazon Bedrock; shared Claude Code agent skills.
