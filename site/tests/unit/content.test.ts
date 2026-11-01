@@ -42,6 +42,17 @@ describe('content', () => {
     const slugs = readdirSync(join(CONTENT, 'case-studies'))
       .map((f) => f.replace(/\.md$/, ''))
       .sort();
-    expect(slugs).toEqual(['REDACTED', 'REDACTED-pipelines', 'REDACTED', 'perspective']);
+    expect(slugs).toEqual(['azure-aws-pipelines', 'nhs-img', 'perspective', 'university-web-team']);
+  });
+
+  it('noUnpublishedClientNames', () => {
+    // Only name clients that Isotoma names publicly (checked against REDACTED, 2026-11-01).
+    for (const file of walk(join(SITE, 'src'))) {
+      // File names too: slugs become public URLs.
+      const text = (relative(SITE, file) + readFileSync(file, 'utf8')).toLowerCase();
+      for (const name of ['REDACTED', 'REDACTED', 'REDACTED', 'REDACTED']) {
+        expect(text.includes(name), `${relative(SITE, file)} names ${name}`).toBe(false);
+      }
+    }
   });
 });
