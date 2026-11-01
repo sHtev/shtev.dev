@@ -74,6 +74,35 @@ resource "aws_cloudfront_distribution" "site" {
     origin_access_control_id = aws_cloudfront_origin_access_control.site.id
   }
 
+  origin {
+    origin_id   = "contact"
+    domain_name = trimsuffix(trimprefix(aws_lambda_function_url.contact.function_url, "https://"), "/")
+
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
+    }
+
+    custom_header {
+      name  = "x-origin-secret"
+      value = random_password.origin_secret.result
+    }
+  }
+
+  # The contact form: never cached, POST allowed, only the headers the Lambda needs.
+  ordered_cache_behavior {
+    path_pattern             = "/api/*"
+    target_origin_id         = "contact"
+    viewer_protocol_policy   = "https-only"
+    allowed_methods          = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods           = ["GET", "HEAD"]
+    compress                 = true
+    cache_policy_id          = data.aws_cloudfront_cache_policy.disabled.id
+    origin_request_policy_id = aws_cloudfront_origin_request_policy.contact.id
+  }
+
   default_cache_behavior {
     target_origin_id           = "site"
     viewer_protocol_policy     = "redirect-to-https"

@@ -1,0 +1,40 @@
+# checkov config for infra/. Every skip is a deliberate choice for a small, low-budget personal
+# site; the reason is next to each one. Run: checkov -d infra --config-file infra/.checkov.yaml
+framework:
+  - terraform
+compact: true
+quiet: true
+skip-check:
+  # Cost: each of these would cost more than the site's whole $2/month budget.
+  - CKV_AWS_68    # WAF on CloudFront (~$5+/month); Shield Standard + budget alarm instead
+  - CKV2_AWS_47   # WAF managed rules (no WAF, see above)
+  - CKV_AWS_145   # S3 KMS CMK; SSE-S3 (AES256) is used
+  - CKV_AWS_119   # DynamoDB KMS CMK; AWS-owned key encryption is on
+  - CKV_AWS_337   # SSM KMS CMK; SecureString uses the AWS-managed key
+  - CKV_AWS_158   # CloudWatch Logs KMS CMK
+  - CKV_AWS_173   # Lambda env var CMK; env vars hold names/ARNs, not secrets
+  - CKV_AWS_26    # SNS encryption; topic only carries contact notifications to Steve
+  - CKV_AWS_117   # Lambda in a VPC would need a NAT gateway (~$35/month); no private resources
+  # Logging/observability we deliberately don't collect (no tracking on this site).
+  - CKV_AWS_18    # S3 access logging
+  - CKV_AWS_86    # CloudFront access logging
+  - CKV2_AWS_39   # Route 53 query logging
+  - CKV_AWS_50    # X-Ray tracing
+  - CKV_AWS_338   # 1-year log retention; 14 days is enough for a contact form
+  # Resilience beyond what a static personal site needs (it's rebuilt from git).
+  - CKV_AWS_144   # S3 cross-region replication
+  - CKV_AWS_310   # CloudFront origin failover
+  - CKV_AWS_21    # versioning on the site bucket (contents are build output)
+  - CKV_AWS_28    # DynamoDB PITR; messages are also emailed, and expire after a year
+  - CKV2_AWS_62   # S3 event notifications
+  - CKV_AWS_116   # Lambda DLQ; invoked synchronously via its URL, errors return to the caller
+  - CKV_AWS_272   # Lambda code signing
+  # By design (see design doc / contact.tf / github-oidc.tf).
+  - CKV_AWS_258   # Function URL AuthType NONE: OAC can't sign no-JS form POSTs; secret header instead
+  - CKV_AWS_301   # public Lambda URL, same reason; reserved concurrency caps cost
+  - CKV_AWS_274   # deploy role uses AdministratorAccess, trusted only from the production environment
+  - CKV_AWS_374   # no geo restriction: the site is for anyone
+  - CKV2_AWS_38   # DNSSEC: revisit after go-live (needs a KMS key)
+  # Fixed at go-live when the ACM certificate replaces CloudFront's default one.
+  - CKV_AWS_174   # minimum TLS version can't be set on the default certificate
+  - CKV2_AWS_42   # custom SSL certificate

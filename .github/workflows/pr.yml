@@ -1,0 +1,93 @@
+name: pr
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  id-token: write # OIDC login to AWS for terraform plan
+
+concurrency:
+  group: pr-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  AWS_REGION: eu-west-2
+  PLAN_ROLE_ARN: arn:aws:iam::REDACTED:role/shtev-dev-github-plan
+
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+    env:
+      ALLOW_PLACEHOLDER_CV: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+
+  lambda:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lambda/contact
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: lambda/contact/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run typecheck
+      - run: npm run build
+
+  infra:
+    runs-on: ubuntu-latest
+    env:
+      TF_VAR_budget_email: ${{ secrets.TF_VAR_BUDGET_EMAIL }}
+      TF_VAR_contact_email: ${{ secrets.TF_VAR_CONTACT_EMAIL }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: lambda/contact/package-lock.json
+      - name: Build the contact Lambda (terraform zips it)
+        run: npm ci && npm run build
+        working-directory: lambda/contact
+      - run: node --test 'infra/main/functions/*.test.mjs'
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+      - run: terraform fmt -check -recursive infra
+      - uses: terraform-linters/setup-tflint@6ffdbaa3be476b3431f7275c26966ef32ff60337 # v6.3.2
+      - run: tflint --init --config "$PWD/.tflint.hcl" && tflint --recursive --config "$PWD/.tflint.hcl"
+        working-directory: infra
+      - uses: bridgecrewio/checkov-action@99bb2caf247dfd9f03cf984373bc6043d4e32ebf # v12.1347.0
+        with:
+          directory: infra
+          config_file: infra/.checkov.yaml
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ env.PLAN_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - run: terraform init -input=false
+        working-directory: infra/main
+      - run: terraform validate
+        working-directory: infra/main
+      - name: terraform plan (shown in the job summary)
+        working-directory: infra/main
+        run: |
+          terraform plan -input=false -no-color -out=plan.tfplan | tee plan.txt
+          { echo '### terraform plan'; echo '```'; tail -c 60000 plan.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"

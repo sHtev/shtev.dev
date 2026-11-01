@@ -16,6 +16,16 @@ resource "aws_s3_bucket_public_access_block" "site" {
   restrict_public_buckets = true
 }
 
+resource "aws_s3_bucket_lifecycle_configuration" "site" {
+  bucket = aws_s3_bucket.site.id
+  rule {
+    id     = "abort-incomplete-uploads"
+    status = "Enabled"
+    filter {}
+    abort_incomplete_multipart_upload { days_after_initiation = 7 }
+  }
+}
+
 resource "aws_s3_bucket_server_side_encryption_configuration" "site" {
   bucket = aws_s3_bucket.site.id
   rule {
@@ -64,6 +74,16 @@ resource "aws_s3_bucket_public_access_block" "private_assets" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "private_assets" {
+  bucket = aws_s3_bucket.private_assets.id
+  rule {
+    id     = "abort-incomplete-uploads"
+    status = "Enabled"
+    filter {}
+    abort_incomplete_multipart_upload { days_after_initiation = 7 }
+  }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "private_assets" {

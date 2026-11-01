@@ -1,7 +1,8 @@
 #!/bin/sh
 # Put the public CV at site/public/cv.pdf (git-ignored) before a build.
 # With PRIVATE_ASSETS_BUCKET set: download it from the private bucket.
-# Otherwise: fail in CI, or write a placeholder for local builds.
+# Otherwise: write a placeholder for local builds, or in CI only when ALLOW_PLACEHOLDER_CV=1
+# (pull-request checks); a deploy without the real CV fails.
 set -eu
 
 out="$(cd "$(dirname "$0")/.." && pwd)/site/public/cv.pdf"
@@ -9,7 +10,7 @@ out="$(cd "$(dirname "$0")/.." && pwd)/site/public/cv.pdf"
 if [ -n "${PRIVATE_ASSETS_BUCKET:-}" ]; then
   aws s3 cp "s3://$PRIVATE_ASSETS_BUCKET/cv/cv.pdf" "$out" --only-show-errors
   echo "fetch-cv: downloaded cv.pdf"
-elif [ -n "${CI:-}" ]; then
+elif [ -n "${CI:-}" ] && [ "${ALLOW_PLACEHOLDER_CV:-}" != "1" ]; then
   echo "fetch-cv: PRIVATE_ASSETS_BUCKET is not set" >&2
   exit 1
 elif [ ! -f "$out" ]; then

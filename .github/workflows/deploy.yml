@@ -1,0 +1,82 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # OIDC login to AWS
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: eu-west-2
+  DEPLOY_ROLE_ARN: arn:aws:iam::REDACTED:role/shtev-dev-github-deploy
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      ALLOW_PLACEHOLDER_CV: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: Site tests
+        working-directory: site
+        run: |
+          npm ci
+          npm run check
+          npm test
+          npx playwright install --with-deps chromium
+          npm run test:e2e
+      - name: Lambda tests
+        working-directory: lambda/contact
+        run: |
+          npm ci
+          npm test
+          npm run typecheck
+      - run: node --test 'infra/main/functions/*.test.mjs'
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: production # the deploy role only trusts this environment
+    env:
+      TF_VAR_budget_email: ${{ secrets.TF_VAR_BUDGET_EMAIL }}
+      TF_VAR_contact_email: ${{ secrets.TF_VAR_CONTACT_EMAIL }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: Build the contact Lambda
+        working-directory: lambda/contact
+        run: npm ci && npm run build
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_wrapper: false # plain stdout for `terraform output -raw`
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ env.DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: terraform apply
+        working-directory: infra/main
+        run: |
+          terraform init -input=false
+          terraform apply -input=false -auto-approve
+          echo "SITE_BUCKET=$(terraform output -raw site_bucket)" >> "$GITHUB_ENV"
+          echo "PRIVATE_ASSETS_BUCKET=$(terraform output -raw private_assets_bucket)" >> "$GITHUB_ENV"
+          echo "DISTRIBUTION_ID=$(terraform output -raw distribution_id)" >> "$GITHUB_ENV"
+      - name: Build the site (fetches the real CV from the private bucket)
+        working-directory: site
+        run: npm ci && npm run build
+      - name: Upload and invalidate
+        run: |
+          aws s3 sync site/dist "s3://$SITE_BUCKET" --delete
+          aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID" --paths '/*'

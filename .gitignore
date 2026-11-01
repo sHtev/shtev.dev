@@ -13,6 +13,7 @@ site/playwright-report/
 *.tfvars
 !*.tfvars.example
 crash.log
+infra/main/.build/
 
 # private material — never committed (see design: CV PDF and source photos stay private)
 assets/source/
@@ -20,6 +21,6 @@ site/public/cv.pdf
 
 # local tooling / scratch
 .superpowers/
-.venv/
+.venv*/
 __pycache__/
 .DS_Store

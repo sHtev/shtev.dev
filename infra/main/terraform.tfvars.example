@@ -1,2 +1,3 @@
-# Copy to terraform.tfvars (git-ignored) and fill in.
-budget_email = "you@example.com"
+# Copy to terraform.tfvars (git-ignored) and fill in. In CI these come from TF_VAR_* secrets.
+budget_email  = "you@example.com"
+contact_email = "you@example.com"
