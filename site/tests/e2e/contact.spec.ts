@@ -80,3 +80,9 @@ test('confirmPromptNotHiddenBehindFooter', async ({ page }) => {
   const footer = (await page.locator('footer').boundingBox())!;
   expect(confirm.y + confirm.height).toBeLessThanOrEqual(footer.y);
 });
+
+test('plainFormLinkLooksLikeAnAction', async ({ page }) => {
+  await page.goto('/contact/');
+  const link = page.getByRole('link', { name: '[ plain form ]' });
+  expect(await link.evaluate((el) => getComputedStyle(el).textDecorationLine)).toBe('none');
+});

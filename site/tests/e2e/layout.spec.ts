@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('rendersHeaderAndPrompt', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByText('STEVE GILROY · platform / devops / ai')).toBeVisible();
+  await expect(page.getByText('STEVE GILROY · platform / devops / ai / full stack')).toBeVisible();
   await expect(page.getByText('shtev@dev:~$')).toBeVisible();
 });
 
