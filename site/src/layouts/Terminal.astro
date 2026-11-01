@@ -62,6 +62,7 @@ const defaultAction = Astro.props.defaultAction ?? actions.length - 1;
   import lines from '../content/prompt-lines.json';
   import { initLanding, initPage } from '../scripts/page';
   import { scanIn } from '../scripts/portrait';
+  import { initContactFlow } from '../scripts/contact';
   import { prefersReducedMotion } from '../scripts/typing';
 
   let teardown: (() => void) | undefined;
@@ -78,6 +79,9 @@ const defaultAction = Astro.props.defaultAction ?? actions.length - 1;
     const portrait = document.querySelector<HTMLElement>('[data-portrait] pre');
     const scan = portrait && scanIn(portrait, (portrait.textContent ?? '').split('\n'), { msPerRow: 18, reducedMotion });
 
+    const form = document.querySelector<HTMLFormElement>('form[data-contact]');
+    const contact = form && initContactFlow(form);
+
     const page = menuEl
       ? initLanding({ promptEl, menuEl, lines, navigate, reducedMotion })
       : initPage({
@@ -88,10 +92,12 @@ const defaultAction = Astro.props.defaultAction ?? actions.length - 1;
           reducedMotion,
           listEl: document.querySelector<HTMLElement>('[data-ls]'),
           promptEl,
+          focusAfterTyping: form?.querySelector<HTMLElement>('input'),
         });
     teardown = () => {
       page.destroy();
       scan?.stop();
+      contact?.destroy();
     };
   });
 </script>

@@ -37,6 +37,8 @@ export interface PageOptions {
   /** ls-style list pages: the list and the prompt its commands are typed into. */
   listEl?: HTMLElement | null;
   promptEl?: HTMLElement;
+  /** Focus this (e.g. the contact form's first field) instead of [ back ] once typing finishes. */
+  focusAfterTyping?: HTMLElement | null;
 }
 
 /** Content pages: type the content, then the footer actions become selectable. */
@@ -63,7 +65,8 @@ export function initPage(opts: PageOptions): { destroy(): void } {
 
   const onTyped = () => {
     typed = true;
-    if (!opts.listEl) focusAction();
+    if (opts.focusAfterTyping) opts.focusAfterTyping.focus();
+    else if (!opts.listEl) focusAction();
     if (opts.listEl && opts.promptEl) {
       const promptEl = opts.promptEl;
       list = createSelectableList(opts.listEl, {
@@ -89,7 +92,7 @@ export function initPage(opts: PageOptions): { destroy(): void } {
   const inActions = () => opts.actionsEl.contains(document.activeElement);
 
   const onKey = (e: KeyboardEvent) => {
-    if (isTypingTarget(e.target) || e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.defaultPrevented || isTypingTarget(e.target) || e.altKey || e.ctrlKey || e.metaKey) return;
     if (!typed) {
       typing?.finish();
       return;

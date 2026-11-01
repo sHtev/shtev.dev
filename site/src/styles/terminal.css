@@ -9,6 +9,8 @@
 
 html {
   background: var(--bg);
+  /* Keep focused elements clear of the sticky footer when the browser scrolls to them. */
+  scroll-padding-bottom: 4em;
 }
 
 body {

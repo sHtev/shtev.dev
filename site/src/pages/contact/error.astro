@@ -1,0 +1,13 @@
+---
+import Terminal from '../../layouts/Terminal.astro';
+---
+
+<Terminal
+  title="Message not sent · Steve Gilroy"
+  command="cat contact.txt"
+  actions={[{ label: '[ back ]', href: '/contact/' }]}
+>
+  <p class="content" data-content>
+    error: the message didn't send. Please try again, or email <a href="mailto:hello@shtev.dev">hello@shtev.dev</a>.
+  </p>
+</Terminal>

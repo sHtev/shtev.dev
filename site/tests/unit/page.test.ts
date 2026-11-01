@@ -105,6 +105,15 @@ describe('initPage', () => {
     expect(navigate).toHaveBeenCalledWith('/case-studies/');
   });
 
+  it('ignoresKeysAlreadyHandled', async () => {
+    start();
+    await vi.runAllTimersAsync();
+    // An earlier handler (e.g. the contact form) has already dealt with this key.
+    document.body.addEventListener('keydown', (e) => e.preventDefault(), { once: true });
+    key('Backspace');
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
   it('keysInFormFieldsDoNotNavigate', async () => {
     start();
     await vi.runAllTimersAsync();
@@ -198,6 +207,14 @@ describe('initPage', () => {
     key('ArrowUp');
     expect(document.activeElement).toBe(items[1]);
     expect(items[1].classList.contains('sel')).toBe(true);
+  });
+
+  it('focusAfterTypingOverridesBack', async () => {
+    const field = document.getElementById('field')!;
+    page = initPage({ contentEl: content, actionsEl: actions, defaultAction: 1, navigate, reducedMotion: false, focusAfterTyping: field });
+    await vi.runAllTimersAsync();
+    expect(document.activeElement).toBe(field);
+    expect(links().some((a) => a.classList.contains('sel'))).toBe(false);
   });
 
   it('pageWithoutContentHighlightsImmediately', () => {
