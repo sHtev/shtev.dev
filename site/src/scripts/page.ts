@@ -13,12 +13,30 @@ function isTypingTarget(target: EventTarget | null): boolean {
   return target instanceof HTMLElement && target.closest('input, textarea, select, [contenteditable]') !== null;
 }
 
+/** Types `command` into the prompt, pauses as if Enter was pressed, then navigates. */
+function runCommand(promptEl: HTMLElement, command: string, href: string, navigate: Navigate, reducedMotion: boolean) {
+  let pending: ReturnType<typeof setTimeout> | undefined;
+  const typing = typeInto(promptEl, command, { msPerTick: COMMAND_MS_PER_CHAR, charsPerTick: 1, reducedMotion });
+  typing.done.then(() => {
+    pending = setTimeout(() => navigate(href), reducedMotion ? 0 : ENTER_PAUSE_MS);
+  });
+  return {
+    cancel() {
+      typing.cancel();
+      clearTimeout(pending);
+    },
+  };
+}
+
 export interface PageOptions {
   contentEl: HTMLElement | null;
   actionsEl: HTMLElement;
   defaultAction: number;
   navigate: Navigate;
   reducedMotion: boolean;
+  /** ls-style list pages: the list and the prompt its commands are typed into. */
+  listEl?: HTMLElement | null;
+  promptEl?: HTMLElement;
 }
 
 /** Content pages: type the content, then the footer actions become selectable. */
@@ -34,9 +52,23 @@ export function initPage(opts: PageOptions): { destroy(): void } {
     ? typeNodes(opts.contentEl, { ...CONTENT_TYPING, reducedMotion: opts.reducedMotion })
     : null;
 
+  let list: ReturnType<typeof createSelectableList> | undefined;
+  let command: ReturnType<typeof runCommand> | undefined;
+
   const onTyped = () => {
     typed = true;
-    highlight();
+    if (!opts.listEl) highlight();
+    if (opts.listEl && opts.promptEl) {
+      const promptEl = opts.promptEl;
+      list = createSelectableList(opts.listEl, {
+        itemSelector: '.item',
+        numberKeys: false,
+        onChoose(_index, el) {
+          if (command) return;
+          command = runCommand(promptEl, el.dataset.command ?? '', el.getAttribute('href') ?? '/', opts.navigate, opts.reducedMotion);
+        },
+      });
+    }
   };
   if (typing) typing.done.then(onTyped);
   else highlight();
@@ -51,7 +83,7 @@ export function initPage(opts: PageOptions): { destroy(): void } {
       const step = e.key === 'ArrowRight' ? 1 : -1;
       selected = (selected + step + actions.length) % actions.length;
       highlight();
-    } else if (e.key === 'Enter' && actions[selected]) {
+    } else if (e.key === 'Enter' && actions[selected] && !list) {
       actions[selected].click();
     } else if (e.key === 'Escape' || e.key === 'Backspace') {
       opts.navigate(backHref);
@@ -69,6 +101,8 @@ export function initPage(opts: PageOptions): { destroy(): void } {
   return {
     destroy() {
       typing?.cancel();
+      command?.cancel();
+      list?.destroy();
       document.removeEventListener('keydown', onKey);
       opts.contentEl?.removeEventListener('click', onContentClick);
     },
@@ -86,34 +120,22 @@ export interface LandingOptions {
 /** Landing page: rotating prompt; choosing an item types its command, then opens it. */
 export function initLanding(opts: LandingOptions): { destroy(): void } {
   const rotation = startRotation(opts.promptEl, opts.lines, { ...ROTATION, reducedMotion: opts.reducedMotion });
-  let pending: ReturnType<typeof setTimeout> | undefined;
-  let typing: ReturnType<typeof typeInto> | undefined;
-  let chosen = false;
+  let command: ReturnType<typeof runCommand> | undefined;
 
   const list = createSelectableList(opts.menuEl, {
     itemSelector: '.item',
     numberKeys: true,
     onChoose(_index, el) {
-      if (chosen) return;
-      chosen = true;
+      if (command) return;
       rotation.stop();
-      const href = el.getAttribute('href') ?? '/';
-      typing = typeInto(opts.promptEl, el.dataset.command ?? '', {
-        msPerTick: COMMAND_MS_PER_CHAR,
-        charsPerTick: 1,
-        reducedMotion: opts.reducedMotion,
-      });
-      typing.done.then(() => {
-        pending = setTimeout(() => opts.navigate(href), opts.reducedMotion ? 0 : ENTER_PAUSE_MS);
-      });
+      command = runCommand(opts.promptEl, el.dataset.command ?? '', el.getAttribute('href') ?? '/', opts.navigate, opts.reducedMotion);
     },
   });
 
   return {
     destroy() {
       rotation.stop();
-      typing?.cancel();
-      clearTimeout(pending);
+      command?.cancel();
       list.destroy();
     },
   };

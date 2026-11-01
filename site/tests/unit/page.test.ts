@@ -113,6 +113,30 @@ describe('initPage', () => {
     expect(navigate).not.toHaveBeenCalled();
   });
 
+  it('listPageEnterTypesCommandThenNavigates', async () => {
+    content.innerHTML = `<ul data-ls>
+      <li><a class="item" href="/x/one/" data-command="cat x/one.md">one</a></li>
+      <li><a class="item" href="/x/two/" data-command="cat x/two.md">two</a></li></ul>`;
+    const promptEl = document.createElement('span');
+    page = initPage({
+      contentEl: content,
+      actionsEl: actions,
+      defaultAction: 1,
+      navigate,
+      reducedMotion: false,
+      promptEl,
+      listEl: content.querySelector('[data-ls]') as HTMLElement,
+    });
+    await vi.runAllTimersAsync();
+    // The list owns the highlight; footer actions stay unhighlighted.
+    expect(links().some((a) => a.classList.contains('sel'))).toBe(false);
+    key('ArrowDown');
+    key('Enter');
+    await vi.runAllTimersAsync();
+    expect(promptEl.textContent).toBe('cat x/two.md');
+    expect(navigate).toHaveBeenCalledWith('/x/two/');
+  });
+
   it('pageWithoutContentHighlightsImmediately', () => {
     page = initPage({ contentEl: null, actionsEl: actions, defaultAction: 1, navigate, reducedMotion: false });
     expect(links()[1].classList.contains('sel')).toBe(true);

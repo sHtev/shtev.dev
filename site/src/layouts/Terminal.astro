@@ -81,6 +81,8 @@ const defaultAction = Astro.props.defaultAction ?? actions.length - 1;
           defaultAction: Number(actionsEl.dataset.defaultAction ?? 0),
           navigate,
           reducedMotion,
+          listEl: document.querySelector<HTMLElement>('[data-ls]'),
+          promptEl,
         }).destroy;
   });
 </script>

@@ -1,0 +1,57 @@
+---
+export interface Entry {
+  slug: string;
+  summary: string;
+  href: string;
+  command: string;
+}
+
+interface Props {
+  entries: Entry[];
+}
+
+const { entries } = Astro.props;
+const width = Math.max(...entries.map((e) => e.slug.length)) + 4;
+---
+
+<ul class="ls" data-ls>
+  {
+    entries.map((e) => (
+      <li>
+        <a class="item" href={e.href} data-command={e.command}>
+          <span class="name">{`${e.slug}/`.padEnd(width)}</span>
+          <span class="summary">{e.summary}</span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .ls {
+    list-style: none;
+    margin: 0.6em 0 0;
+    padding: 0;
+  }
+
+  /* Name column, then a summary column that wraps within itself. */
+  .item {
+    display: inline-grid;
+    grid-template-columns: auto 1fr;
+    text-decoration: none;
+  }
+
+  .name {
+    white-space: pre;
+  }
+
+  .item:not(.sel) .summary {
+    color: var(--dim);
+  }
+
+  @media (max-width: 600px) {
+    .item {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

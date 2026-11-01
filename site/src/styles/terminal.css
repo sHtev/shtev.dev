@@ -88,6 +88,10 @@ main {
   max-width: 62ch;
 }
 
+.content-wide {
+  max-width: 100ch;
+}
+
 .footer {
   position: sticky;
   bottom: 0;

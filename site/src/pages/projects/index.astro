@@ -1,12 +1,18 @@
 ---
 import { getCollection } from 'astro:content';
+import LsList from '../../components/LsList.astro';
 import Terminal from '../../layouts/Terminal.astro';
 
-const entries = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const entries = (await getCollection('projects'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((e) => ({
+    slug: e.id,
+    summary: e.data.summary,
+    href: `/projects/${e.id}/`,
+    command: `cat projects/${e.id}.md`,
+  }));
 ---
 
 <Terminal title="Projects · Steve Gilroy" command="ls projects/">
-  <ul class="content" data-content>
-    {entries.map((e) => <li><a href={`/projects/${e.id}/`}>{e.id}</a> {e.data.summary}</li>)}
-  </ul>
+  <div class="content content-wide" data-content><LsList entries={entries} /></div>
 </Terminal>

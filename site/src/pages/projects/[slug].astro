@@ -8,6 +8,7 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
+const { url, repo } = entry.data;
 const { Content } = await render(entry);
 ---
 
@@ -16,5 +17,9 @@ const { Content } = await render(entry);
   command={`cat projects/${entry.id}.md`}
   actions={[{ label: '[ back ]', href: '/projects/' }]}
 >
-  <div class="content" data-content><Content /></div>
+  <div class="content" data-content>
+    <Content />
+    {url && <p>site: <a href={url}>{url.replace(/^https:\/\//, '')}</a></p>}
+    {repo && <p>repo: <a href={repo}>{repo.replace(/^https:\/\//, '')}</a></p>}
+  </div>
 </Terminal>
