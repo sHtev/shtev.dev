@@ -17,7 +17,9 @@ Django and React client projects; AWS and Kubernetes; cloud migrations; serverle
 
 **2006–2013** · Research Fellow / Senior Lecturer, Teesside University
 
-**Education** · PhD in Human-Computer Interaction and BEng (Hons) Computer Science, First Class, University of York
+**Education** · University of York\
+PhD, Human-Computer Interaction\
+BEng (Hons) Computer Science, First Class
 
 **Certifications** · AWS Solutions Architect – Professional (in progress); AWS Solutions Architect – Associate and Certified Kubernetes Administrator (previously held)
 
