@@ -1,0 +1,8 @@
+[
+  "deploy kubernetes-platforms --gitops",
+  "terraform apply   # with a plan first",
+  "migrate legacy --to=cloud",
+  "deploy bedrock && generate skills",
+  "mentor --juniors",
+  "cut-costs --aws"
+]
