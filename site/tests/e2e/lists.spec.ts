@@ -51,3 +51,14 @@ test('tabMovesHighlightToBack', async ({ page }) => {
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL('/');
 });
+
+test('downPastLastItemStopsOnBack', async ({ page }) => {
+  await page.goto('/case-studies/');
+  await firstItemSelected(page);
+  for (let i = 0; i < 6; i++) await page.keyboard.press('ArrowDown');
+  const back = page.getByRole('link', { name: '[ back ]' });
+  await expect(back).toBeFocused();
+  await expect(back).toHaveClass(/sel/);
+  await page.keyboard.press('ArrowUp');
+  await expect(page.locator('[data-ls] .item').last()).toHaveClass(/sel/);
+});

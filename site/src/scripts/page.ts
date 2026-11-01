@@ -44,7 +44,8 @@ export function initPage(opts: PageOptions): { destroy(): void } {
   const actions = [...opts.actionsEl.querySelectorAll<HTMLElement>('[data-action]')];
   let selected = Math.min(opts.defaultAction, actions.length - 1);
   // Esc/Backspace follow the page's own [ back ] link (a case study goes back to its list).
-  const backHref = actions.find((a) => a.textContent?.trim() === '[ back ]')?.getAttribute('href') ?? '/';
+  const backIndex = Math.max(0, actions.findIndex((a) => a.textContent?.trim() === '[ back ]'));
+  const backHref = actions[backIndex]?.getAttribute('href') ?? '/';
   let typed = !opts.contentEl;
 
   const markAction = () => actions.forEach((a, i) => a.classList.toggle('sel', i === selected));
@@ -69,6 +70,12 @@ export function initPage(opts: PageOptions): { destroy(): void } {
         itemSelector: '.item',
         numberKeys: false,
         focusOnStart: true,
+        wrap: false,
+        // Down from the last item moves on to the footer's [ back ].
+        onPastEnd: () => {
+          selected = backIndex;
+          focusAction();
+        },
         onChoose(_index, el) {
           if (command) return;
           command = runCommand(promptEl, el.dataset.command ?? '', el.getAttribute('href') ?? '/', opts.navigate, opts.reducedMotion);
@@ -93,6 +100,10 @@ export function initPage(opts: PageOptions): { destroy(): void } {
       const step = e.key === 'ArrowRight' ? 1 : -1;
       selected = (selected + step + actions.length) % actions.length;
       focusAction();
+    } else if (e.key === 'ArrowUp' && list && inActions()) {
+      list.select(-1); // -1 wraps to the last item
+    } else if (e.key === 'ArrowDown' && list && inActions()) {
+      // Already at the bottom: stay on the action.
     } else if (e.key === 'Enter' && actions[selected] && actionsActive) {
       actions[selected].click();
     } else if (e.key === 'Escape' || e.key === 'Backspace') {

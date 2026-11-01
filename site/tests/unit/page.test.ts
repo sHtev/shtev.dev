@@ -174,6 +174,32 @@ describe('initPage', () => {
     expect(navigate).not.toHaveBeenCalledWith('/x/one/');
   });
 
+  it('listDownFromLastGoesToBackAndStays', async () => {
+    content.innerHTML = `<ul data-ls>
+      <li><a class="item" href="/x/one/" data-command="cat x/one.md">one</a></li>
+      <li><a class="item" href="/x/two/" data-command="cat x/two.md">two</a></li></ul>`;
+    page = initPage({
+      contentEl: content,
+      actionsEl: actions,
+      defaultAction: 1,
+      navigate,
+      reducedMotion: false,
+      promptEl: document.createElement('span'),
+      listEl: content.querySelector('[data-ls]') as HTMLElement,
+    });
+    await vi.runAllTimersAsync();
+    const items = [...content.querySelectorAll<HTMLElement>('.item')];
+    key('ArrowDown');
+    key('ArrowDown');
+    expect(document.activeElement).toBe(links()[1]);
+    expect(links()[1].classList.contains('sel')).toBe(true);
+    key('ArrowDown');
+    expect(document.activeElement).toBe(links()[1]);
+    key('ArrowUp');
+    expect(document.activeElement).toBe(items[1]);
+    expect(items[1].classList.contains('sel')).toBe(true);
+  });
+
   it('pageWithoutContentHighlightsImmediately', () => {
     page = initPage({ contentEl: null, actionsEl: actions, defaultAction: 1, navigate, reducedMotion: false });
     expect(links()[1].classList.contains('sel')).toBe(true);

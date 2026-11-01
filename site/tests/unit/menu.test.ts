@@ -113,6 +113,18 @@ describe('createSelectableList', () => {
     expect(list.selected()).toBe(1);
   });
 
+  it('noWrapStopsAtEndsAndReportsPastEnd', () => {
+    list.destroy();
+    const onPastEnd = vi.fn();
+    list = createSelectableList(root, { itemSelector: '.item', onChoose, numberKeys: false, wrap: false, onPastEnd });
+    key('ArrowUp');
+    expect(list.selected()).toBe(0);
+    list.select(3);
+    key('ArrowDown');
+    expect(list.selected()).toBe(3);
+    expect(onPastEnd).toHaveBeenCalledTimes(1);
+  });
+
   it('destroyStopsListening', () => {
     list.destroy();
     key('ArrowDown');

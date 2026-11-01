@@ -4,6 +4,10 @@ export interface SelectableListOptions {
   numberKeys: boolean;
   /** Give the first item keyboard focus as well as the highlight. */
   focusOnStart?: boolean;
+  /** Arrow keys wrap round at the ends (default true). */
+  wrap?: boolean;
+  /** Called on ArrowDown at the last item when not wrapping. */
+  onPastEnd?(): void;
 }
 
 export interface SelectableList {
@@ -48,8 +52,12 @@ export function createSelectableList(root: HTMLElement, opts: SelectableListOpti
   };
 
   const onKey = (e: KeyboardEvent) => {
-    if (isTypingTarget(e.target) || e.altKey || e.ctrlKey || e.metaKey || !ownsFocus()) return;
-    if (e.key === 'ArrowDown') select(current + 1);
+    if (e.defaultPrevented || isTypingTarget(e.target) || e.altKey || e.ctrlKey || e.metaKey || !ownsFocus()) return;
+    const wrap = opts.wrap ?? true;
+    const last = items.length - 1;
+    if (e.key === 'ArrowDown' && !wrap && current === last) opts.onPastEnd?.();
+    else if (e.key === 'ArrowDown') select(current + 1);
+    else if (e.key === 'ArrowUp' && !wrap && current === 0) select(0);
     else if (e.key === 'ArrowUp') select(current - 1);
     else if (e.key === 'Enter') choose(current);
     else if (opts.numberKeys && /^[1-9]$/.test(e.key) && Number(e.key) <= items.length) choose(Number(e.key) - 1);
