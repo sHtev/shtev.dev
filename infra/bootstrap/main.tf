@@ -8,7 +8,6 @@ terraform {
   }
 
   backend "s3" {
-    bucket       = "shtev-dev-tfstate-REDACTED"
     key          = "bootstrap/terraform.tfstate"
     region       = "eu-west-2"
     encrypt      = true

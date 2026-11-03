@@ -15,7 +15,6 @@ concurrency:
 
 env:
   AWS_REGION: eu-west-2
-  DEPLOY_ROLE_ARN: arn:aws:iam::REDACTED:role/shtev-dev-github-deploy
 
 jobs:
   test:
@@ -50,6 +49,7 @@ jobs:
     env:
       TF_VAR_budget_email: ${{ secrets.TF_VAR_BUDGET_EMAIL }}
       TF_VAR_contact_email: ${{ secrets.TF_VAR_CONTACT_EMAIL }}
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }} # a secret so logs mask it
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -63,12 +63,12 @@ jobs:
           terraform_wrapper: false # plain stdout for `terraform output -raw`
       - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
         with:
-          role-to-assume: ${{ env.DEPLOY_ROLE_ARN }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/shtev-dev-github-deploy
           aws-region: ${{ env.AWS_REGION }}
       - name: terraform apply
         working-directory: infra/main
         run: |
-          terraform init -input=false
+          terraform init -input=false -backend-config="bucket=shtev-dev-tfstate-$AWS_ACCOUNT_ID"
           terraform apply -input=false -auto-approve
           echo "SITE_BUCKET=$(terraform output -raw site_bucket)" >> "$GITHUB_ENV"
           echo "PRIVATE_ASSETS_BUCKET=$(terraform output -raw private_assets_bucket)" >> "$GITHUB_ENV"

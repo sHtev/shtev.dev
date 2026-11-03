@@ -23,7 +23,8 @@ then `AWS_PROFILE=shtev` (read-only) or `AWS_PROFILE=shtev-admin`.
 cd infra/main
 cp terraform.tfvars.example terraform.tfvars   # set budget_email and contact_email (git-ignored)
 (cd ../../lambda/contact && npm ci && npm run build)   # terraform zips lambda/contact/dist
-AWS_PROFILE=shtev-admin terraform init && AWS_PROFILE=shtev-admin terraform plan
+echo "bucket = \"shtev-dev-tfstate-<account id>\"" > ../backend.hcl   # git-ignored
+AWS_PROFILE=shtev-admin terraform init -backend-config=../backend.hcl && AWS_PROFILE=shtev-admin terraform plan
 ```
 
 Linters: `tflint --recursive --config "$PWD/.tflint.hcl"` (from `infra/`),
@@ -34,7 +35,7 @@ Linters: `tflint --recursive --config "$PWD/.tflint.hcl"` (from `infra/`),
 
 - [x] Bootstrap state bucket (`infra/bootstrap`, applied by hand; its state lives in the bucket).
 - [ ] Confirm the SNS email subscription (AWS emails a link to the contact address).
-- [x] Upload the public CV: `AWS_PROFILE=shtev-admin PRIVATE_ASSETS_BUCKET=shtev-dev-private-REDACTED tools/upload-cv.sh ~/Documents/CVs/CV-I-2026-SWG-Web.pdf`
+- [x] Upload the public CV: `AWS_PROFILE=shtev-admin PRIVATE_ASSETS_BUCKET=$(terraform -chdir=infra/main output -raw private_assets_bucket) tools/upload-cv.sh ~/Documents/CVs/CV-I-2026-SWG-Web.pdf`
 - [ ] GitHub repo `sHtev/shtev.dev`, with an environment `production` limited to the `main` branch,
-      and secrets `TF_VAR_BUDGET_EMAIL` / `TF_VAR_CONTACT_EMAIL`.
+      and repo secrets `AWS_ACCOUNT_ID`, `TF_VAR_BUDGET_EMAIL` and `TF_VAR_CONTACT_EMAIL`.
 - [ ] Go-live: content approved, then Porkbun nameservers → the Route 53 zone (`terraform output route53_nameservers`).

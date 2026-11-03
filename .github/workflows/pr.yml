@@ -13,7 +13,6 @@ concurrency:
 
 env:
   AWS_REGION: eu-west-2
-  PLAN_ROLE_ARN: arn:aws:iam::REDACTED:role/shtev-dev-github-plan
 
 jobs:
   site:
@@ -58,6 +57,7 @@ jobs:
     env:
       TF_VAR_budget_email: ${{ secrets.TF_VAR_BUDGET_EMAIL }}
       TF_VAR_contact_email: ${{ secrets.TF_VAR_CONTACT_EMAIL }}
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }} # a secret so logs mask it
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -80,9 +80,9 @@ jobs:
           config_file: infra/.checkov.yaml
       - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
         with:
-          role-to-assume: ${{ env.PLAN_ROLE_ARN }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/shtev-dev-github-plan
           aws-region: ${{ env.AWS_REGION }}
-      - run: terraform init -input=false
+      - run: terraform init -input=false -backend-config="bucket=shtev-dev-tfstate-$AWS_ACCOUNT_ID"
         working-directory: infra/main
       - run: terraform validate
         working-directory: infra/main
@@ -90,4 +90,4 @@ jobs:
         working-directory: infra/main
         run: |
           terraform plan -input=false -no-color -out=plan.tfplan | tee plan.txt
-          { echo '### terraform plan'; echo '```'; tail -c 60000 plan.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          { echo '### terraform plan'; echo '```'; tail -c 60000 plan.txt | sed "s/$AWS_ACCOUNT_ID/<account>/g"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"

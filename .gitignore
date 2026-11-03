@@ -25,3 +25,4 @@ site/public/cv.pdf
 __pycache__/
 .DS_Store
 site/tests/private-terms.txt
+infra/backend.hcl
