@@ -5,9 +5,9 @@ variable "domain" {
 }
 
 variable "custom_domain_enabled" {
-  description = "Attach shtev.dev to CloudFront. Leave false until the Porkbun nameservers point at Route 53 (go-live)."
+  description = "Attach shtev.dev to CloudFront. Needs the Porkbun nameservers pointing at Route 53."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "budget_email" {
