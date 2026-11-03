@@ -12,5 +12,9 @@ resource "aws_route53_record" "spf" {
   name    = var.domain
   type    = "TXT"
   ttl     = 3600
-  records = ["v=spf1 include:spf.improvmx.com ~all"]
+  # Route 53 allows one TXT set per name, so other TXT values share this record.
+  records = [
+    "v=spf1 include:spf.improvmx.com ~all",
+    "google-site-verification=OoGMK6naQUSiNx5w3QTmoeYgIwgEHMi8rMU3BP_F9UM", # Cloud Identity (GCP organisation)
+  ]
 }
