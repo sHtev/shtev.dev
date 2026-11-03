@@ -1,7 +1,7 @@
 ---
 title: About
 command: cat about.md
-draft: true
+draft: false
 ---
 
 I'm Steve, a senior platform and DevOps engineer based near York, with 13 years of commercial software delivery and a full stack background.

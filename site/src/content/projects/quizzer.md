@@ -3,7 +3,7 @@ title: Quizzer
 summary: lockdown family pub quiz, generated from APIs
 repo: https://github.com/sHtev/quizzer
 order: 3
-draft: true
+draft: false
 ---
 
 A pub quiz app I built for my family during lockdown, with team registration, rounds, answer sheets and scores. It's a Node/Express app with Handlebars templates and MongoDB.

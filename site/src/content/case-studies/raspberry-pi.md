@@ -2,7 +2,7 @@
 title: Raspberry Pi Foundation
 summary: an education charity's websites, from donations to running young people's code in space
 order: 2
-draft: true
+draft: false
 ---
 
 **The organisation.** The Raspberry Pi Foundation is a UK education charity that helps young people learn to code and make things with computers.

@@ -2,7 +2,7 @@
 title: Perspective
 summary: pensions information service, from stand-alone product to cloud and AI
 order: 1
-draft: true
+draft: false
 ---
 
 **The client.** Pendragon's Perspective is an online information service for the UK pensions industry, used by pension law firms, benefit consultants, actuaries and government departments.

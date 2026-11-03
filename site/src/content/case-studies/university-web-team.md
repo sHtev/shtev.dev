@@ -2,7 +2,7 @@
 title: University web team
 summary: a London university's web team, given a formal SDLC and CI/CD
 order: 4
-draft: true
+draft: false
 ---
 
 **The client.** The web development team at a London university.

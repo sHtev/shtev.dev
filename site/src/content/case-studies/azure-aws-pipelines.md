@@ -2,7 +2,7 @@
 title: Defence intelligence APIs and pipelines
 summary: an authentication and API layer, and deployment pipelines, for a defence intelligence provider
 order: 5
-draft: true
+draft: false
 ---
 
 **The client.** A defence intelligence provider with established enterprise APIs, whose teams used Azure DevOps and deployed to AWS.

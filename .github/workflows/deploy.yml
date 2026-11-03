@@ -28,6 +28,8 @@ jobs:
           node-version: 24
       - name: Site tests
         working-directory: site
+        env:
+          GO_LIVE: "1" # the site is public: no page may still be a draft
         run: |
           npm ci
           npm run check

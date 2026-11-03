@@ -34,8 +34,8 @@ Linters: `tflint --recursive --config "$PWD/.tflint.hcl"` (from `infra/`),
 ### One-off manual steps
 
 - [x] Bootstrap state bucket (`infra/bootstrap`, applied by hand; its state lives in the bucket).
-- [ ] Confirm the SNS email subscription (AWS emails a link to the contact address).
+- [x] Confirm the SNS email subscription (AWS emails a link to the contact address).
 - [x] Upload the public CV: `AWS_PROFILE=shtev-admin PRIVATE_ASSETS_BUCKET=$(terraform -chdir=infra/main output -raw private_assets_bucket) tools/upload-cv.sh ~/Documents/CVs/CV-I-2026-SWG-Web.pdf`
-- [ ] GitHub repo `sHtev/shtev.dev`, with an environment `production` limited to the `main` branch,
+- [x] GitHub repo `sHtev/shtev.dev`, with an environment `production` limited to the `main` branch,
       and repo secrets `AWS_ACCOUNT_ID`, `TF_VAR_BUDGET_EMAIL` and `TF_VAR_CONTACT_EMAIL`.
-- [ ] Go-live: content approved, then Porkbun nameservers → the Route 53 zone (`terraform output route53_nameservers`).
+- [x] Go-live: content approved, then Porkbun nameservers → the Route 53 zone (`terraform output route53_nameservers`).

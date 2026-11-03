@@ -1,7 +1,7 @@
 ---
 title: CV
 command: open cv.pdf
-draft: true
+draft: false
 ---
 
 Senior DevOps engineer · 13 years in commercial software delivery · York, UK (remote)
