@@ -7,7 +7,7 @@ test('listsCaseStudiesInOrder', async ({ page }) => {
   await page.goto('/case-studies/');
   await firstItemSelected(page);
   const names = await page.locator('[data-ls] .item .name').allTextContents();
-  expect(names.map((n) => n.trim())).toEqual(['perspective/', 'nhs-img/', 'university-web-team/', 'azure-aws-pipelines/']);
+  expect(names.map((n) => n.trim())).toEqual(['perspective/', 'raspberry-pi/', 'nhs-img/', 'university-web-team/', 'azure-aws-pipelines/']);
 });
 
 test('listKeyboardOpensDetail', async ({ page }) => {
@@ -15,8 +15,8 @@ test('listKeyboardOpensDetail', async ({ page }) => {
   await firstItemSelected(page);
   await page.keyboard.press('ArrowDown');
   await page.keyboard.press('Enter');
-  await expect(page.locator('[data-prompt]')).toHaveText('cat case-studies/nhs-img.md');
-  await expect(page).toHaveURL('/case-studies/nhs-img/');
+  await expect(page.locator('[data-prompt]')).toHaveText('cat case-studies/raspberry-pi.md');
+  await expect(page).toHaveURL('/case-studies/raspberry-pi/');
 });
 
 test('listEscGoesHome', async ({ page }) => {
