@@ -135,8 +135,11 @@ resource "aws_cloudfront_distribution" "site" {
     geo_restriction { restriction_type = "none" }
   }
 
-  # Preview stage: CloudFront's own certificate on *.cloudfront.net. Go-live (Task 14) swaps in ACM.
+  # Preview: CloudFront's own *.cloudfront.net certificate. Go-live: the ACM certificate below.
   viewer_certificate {
-    cloudfront_default_certificate = true
+    cloudfront_default_certificate = !var.custom_domain_enabled
+    acm_certificate_arn            = var.custom_domain_enabled ? aws_acm_certificate_validation.site[0].certificate_arn : null
+    ssl_support_method             = var.custom_domain_enabled ? "sni-only" : null
+    minimum_protocol_version       = var.custom_domain_enabled ? "TLSv1.2_2021" : "TLSv1"
   }
 }

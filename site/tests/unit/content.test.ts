@@ -34,6 +34,14 @@ describe('content', () => {
     }
   });
 
+  // The deploy sets GO_LIVE=1 once the site is public: nothing may still be a draft.
+  it.runIf(process.env.GO_LIVE === '1')('noDraftsWhenGoingLive', () => {
+    for (const file of markdown) {
+      const frontMatter = readFileSync(file, 'utf8').split('---')[1] ?? '';
+      expect(frontMatter, relative(SITE, file)).toMatch(/^draft: false$/m);
+    }
+  });
+
   it('promptLinesIncludeSteveWording', () => {
     const lines: string[] = JSON.parse(readFileSync(join(CONTENT, 'prompt-lines.json'), 'utf8'));
     expect(lines).toContain('deploy bedrock && generate skills');
