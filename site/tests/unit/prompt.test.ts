@@ -43,12 +43,22 @@ describe('startRotation', () => {
     expect(el.textContent).toBe('wx');
   });
 
-  it('reducedMotionStaticRandomLine', () => {
+  it('reducedMotionStartsOnRandomLine', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0.9);
     startRotation(el, LINES, { ...OPTS, reducedMotion: true });
     expect(el.textContent).toBe('wxyz');
-    vi.advanceTimersByTime(60_000);
-    expect(el.textContent).toBe('wxyz');
+    vi.restoreAllMocks();
+  });
+
+  it('reducedMotionSwapsWholeLines', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+    startRotation(el, LINES, { ...OPTS, reducedMotion: true });
+    const seen = new Set<string>();
+    for (let t = 0; t < 10_000; t += 50) {
+      vi.advanceTimersByTime(50);
+      seen.add(el.textContent ?? '');
+    }
+    expect([...seen].sort()).toEqual(['abc', 'wxyz']); // never partial, never empty
     vi.restoreAllMocks();
   });
 

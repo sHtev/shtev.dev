@@ -5,18 +5,27 @@ export interface RotationOptions {
   reducedMotion: boolean;
 }
 
+const REDUCED_MOTION_SWAP_MS = 4000;
+
 /** Types each line, holds it, clears it in one go, then moves to the next. */
 export function startRotation(el: HTMLElement, lines: string[], opts: RotationOptions): { stop(): void } {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const stop = () => clearTimeout(timer);
 
-  // Reduced motion: no typing, but still a different command each visit.
+  let line = 0;
+
+  // Reduced motion: no typing; start on a random command and swap whole lines.
   if (opts.reducedMotion || lines.length === 0) {
-    el.textContent = lines[Math.floor(Math.random() * lines.length)] ?? '';
+    line = Math.floor(Math.random() * lines.length);
+    const swap = () => {
+      el.textContent = lines[line] ?? '';
+      line = (line + 1) % lines.length;
+      if (lines.length > 1) timer = setTimeout(swap, REDUCED_MOTION_SWAP_MS);
+    };
+    swap();
     return { stop };
   }
 
-  let line = 0;
   let shown = 0;
 
   const clear = () => {
