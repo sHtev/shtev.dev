@@ -24,3 +24,4 @@ site/public/cv.pdf
 .venv*/
 __pycache__/
 .DS_Store
+site/tests/private-terms.txt

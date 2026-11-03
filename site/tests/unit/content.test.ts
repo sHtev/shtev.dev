@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
@@ -24,12 +24,13 @@ describe('content', () => {
   });
 
   it('noPrivateContactDetails', () => {
-    const files = [...walk(join(SITE, 'src')), ...walk(join(SITE, 'public'))];
-    for (const file of files) {
+    for (const file of [...walk(join(SITE, 'src')), ...walk(join(SITE, 'public'))]) {
       const text = readFileSync(file, 'utf8');
-      for (const secret of ['REDACTED', 'REDACTED', 'REDACTED', 'REDACTED', 'REDACTED']) {
-        expect(text.includes(secret), `${relative(SITE, file)} contains ${secret}`).toBe(false);
+      const emails = text.match(/[\w.+-]+@[\w-]+(\.[\w-]+)+/g) ?? [];
+      for (const email of emails) {
+        expect(email, relative(SITE, file)).toMatch(/@shtev\.dev$/);
       }
+      expect(text, `${relative(SITE, file)} contains a mobile number`).not.toMatch(/(\+44\s?|\b0)7\d{3}\s?\d{3}\s?\d{3}/);
     }
   });
 
@@ -45,13 +46,19 @@ describe('content', () => {
     expect(slugs).toEqual(['azure-aws-pipelines', 'nhs-img', 'perspective', 'university-web-team']);
   });
 
-  it('noUnpublishedClientNames', () => {
-    // Only name clients that Isotoma names publicly (checked against REDACTED, 2026-11-01).
-    for (const file of walk(join(SITE, 'src'))) {
+  // Private terms (client names, personal details) live in a git-ignored file, one per line.
+  const privateTerms = join(SITE, 'tests/private-terms.txt');
+
+  it.skipIf(!existsSync(privateTerms))('noPrivateTerms', () => {
+    const terms = readFileSync(privateTerms, 'utf8')
+      .split('\n')
+      .map((t) => t.trim().toLowerCase())
+      .filter(Boolean);
+    for (const file of [...walk(join(SITE, 'src')), ...walk(join(SITE, 'public'))]) {
       // File names too: slugs become public URLs.
       const text = (relative(SITE, file) + readFileSync(file, 'utf8')).toLowerCase();
-      for (const name of ['REDACTED', 'REDACTED', 'REDACTED', 'REDACTED']) {
-        expect(text.includes(name), `${relative(SITE, file)} names ${name}`).toBe(false);
+      for (const term of terms) {
+        expect(text.includes(term), `${relative(SITE, file)} contains a private term`).toBe(false);
       }
     }
   });
