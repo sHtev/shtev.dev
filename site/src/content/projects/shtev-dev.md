@@ -1,6 +1,7 @@
 ---
 title: shtev.dev
 summary: this site, as infrastructure code
+repo: https://github.com/sHtev/shtev.dev
 order: 1
 draft: false
 ---
