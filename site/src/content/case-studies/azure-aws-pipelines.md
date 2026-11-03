@@ -1,7 +1,7 @@
 ---
 title: Azure DevOps to AWS pipelines
 summary: deployment pipelines for a defence intelligence provider
-order: 4
+order: 5
 draft: true
 ---
 

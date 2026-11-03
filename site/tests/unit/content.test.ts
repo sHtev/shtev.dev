@@ -51,7 +51,7 @@ describe('content', () => {
     const slugs = readdirSync(join(CONTENT, 'case-studies'))
       .map((f) => f.replace(/\.md$/, ''))
       .sort();
-    expect(slugs).toEqual(['azure-aws-pipelines', 'nhs-img', 'perspective', 'university-web-team']);
+    expect(slugs).toEqual(['azure-aws-pipelines', 'nhs-img', 'perspective', 'raspberry-pi', 'university-web-team']);
   });
 
   // Private terms (client names, personal details) live in a git-ignored file, one per line.
