@@ -13,5 +13,5 @@ draft: false
 - **The projects site**, where young people follow step-by-step coding projects.
 - **Astro Pi**, where young people sign up to have their code run on Raspberry Pi computers aboard the International Space Station.
 - **Coolest Projects**, the Foundation's showcase for young creators. When COVID lockdowns stopped the in-person event, we turned it into an online platform for submitting and judging projects.
-- **Single sign-on**, the login used across the Foundation's sites.
+- **Single sign-on** across the Foundation's sites: our own Express app for login and consent, with Ory Hydra providing OIDC sign-in for the sites and OAuth 2.0 for internal applications.
 - **The home page**, including online donations through Stripe.
