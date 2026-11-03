@@ -24,8 +24,8 @@ jobs:
       ALLOW_PLACEHOLDER_CV: "1"
       GO_LIVE: "1" # the site is public: no page may still be a draft
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version: 24
           cache: npm
@@ -42,8 +42,8 @@ jobs:
       run:
         working-directory: lambda/contact
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version: 24
           cache: npm
@@ -60,8 +60,8 @@ jobs:
       TF_VAR_contact_email: ${{ secrets.TF_VAR_CONTACT_EMAIL }}
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }} # a secret so logs mask it
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version: 24
           cache: npm
@@ -70,16 +70,16 @@ jobs:
         run: npm ci && npm run build
         working-directory: lambda/contact
       - run: node --test 'infra/main/functions/*.test.mjs'
-      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+      - uses: hashicorp/setup-terraform@v4.0.1
       - run: terraform fmt -check -recursive infra
-      - uses: terraform-linters/setup-tflint@6ffdbaa3be476b3431f7275c26966ef32ff60337 # v6.3.2
+      - uses: terraform-linters/setup-tflint@v6.3.2
       - run: tflint --init --config "$PWD/.tflint.hcl" && tflint --recursive --config "$PWD/.tflint.hcl"
         working-directory: infra
-      - uses: bridgecrewio/checkov-action@99bb2caf247dfd9f03cf984373bc6043d4e32ebf # v12.1347.0
+      - uses: bridgecrewio/checkov-action@v12.1347.0
         with:
           directory: infra
           config_file: infra/.checkov.yaml
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+      - uses: aws-actions/configure-aws-credentials@v6.3.0
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/shtev-dev-github-plan
           aws-region: ${{ env.AWS_REGION }}
