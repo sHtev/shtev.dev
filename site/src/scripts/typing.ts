@@ -20,6 +20,13 @@ export function typeNodes(root: HTMLElement, opts: TypingOptions): Typing {
   const nodes: Text[] = [];
   while (walker.nextNode()) nodes.push(walker.currentNode as Text);
   const texts = nodes.map((n) => n.data);
+  // An empty <li> still draws its bullet, so each list item stays hidden until typing reaches it.
+  const items = [...root.querySelectorAll('li')];
+  const reveal = (n: Text) => {
+    for (let el = n.parentElement; el && el !== root; el = el.parentElement) {
+      if (el.tagName === 'LI') el.style.visibility = '';
+    }
+  };
 
   let resolve!: () => void;
   const done = new Promise<void>((r) => (resolve = r));
@@ -33,6 +40,7 @@ export function typeNodes(root: HTMLElement, opts: TypingOptions): Typing {
   const finish = () => {
     clearTimeout(timer);
     nodes.forEach((n, i) => (n.data = texts[i]));
+    items.forEach((li) => (li.style.visibility = ''));
     release();
     resolve();
   };
@@ -40,6 +48,7 @@ export function typeNodes(root: HTMLElement, opts: TypingOptions): Typing {
   const tick = () => {
     let budget = opts.charsPerTick;
     while (budget > 0 && node < nodes.length) {
+      if (shown === 0) reveal(nodes[node]);
       const take = Math.min(budget, texts[node].length - shown);
       shown += take;
       budget -= take;
@@ -61,6 +70,7 @@ export function typeNodes(root: HTMLElement, opts: TypingOptions): Typing {
   } else {
     root.style.minHeight = `${root.getBoundingClientRect().height}px`;
     nodes.forEach((n) => (n.data = ''));
+    items.forEach((li) => (li.style.visibility = 'hidden'));
     timer = setTimeout(tick, opts.msPerTick);
   }
 
