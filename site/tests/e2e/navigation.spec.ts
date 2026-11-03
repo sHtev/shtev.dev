@@ -85,3 +85,11 @@ test('cursorOnHomePage', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.prompt .cursor')).toBeVisible();
 });
+
+test('nameInHeaderGoesHome', async ({ page }) => {
+  await page.goto('/case-studies/raspberry-pi/');
+  const home = page.getByRole('link', { name: 'STEVE GILROY' });
+  expect(await home.evaluate((el) => getComputedStyle(el).textDecorationLine)).toBe('none');
+  await home.click();
+  await expect(page).toHaveURL('/');
+});

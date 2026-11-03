@@ -79,6 +79,12 @@ a:focus-visible:not(.sel) {
   white-space: pre;
 }
 
+/* The name is a quiet link home. */
+.header .home {
+  color: inherit;
+  text-decoration: none;
+}
+
 .prompt {
   margin: 0;
   font-size: 30px;
