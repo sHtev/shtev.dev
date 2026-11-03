@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { createSelectableList } from '../../src/scripts/menu';
 
 function key(key: string, target: EventTarget = document.body) {
@@ -12,7 +12,7 @@ function move(el: Element, x: number, y: number) {
 describe('createSelectableList', () => {
   let root: HTMLElement;
   let items: HTMLElement[];
-  let onChoose: ReturnType<typeof vi.fn>;
+  let onChoose: Mock<(index: number, el: HTMLElement) => void>;
   let list: ReturnType<typeof createSelectableList>;
 
   beforeEach(() => {
@@ -24,7 +24,7 @@ describe('createSelectableList', () => {
       <input id="field" />`;
     root = document.getElementById('menu')!;
     items = [...root.querySelectorAll<HTMLElement>('.item')];
-    onChoose = vi.fn();
+    onChoose = vi.fn<(index: number, el: HTMLElement) => void>();
     list = createSelectableList(root, { itemSelector: '.item', onChoose, numberKeys: true });
   });
 
@@ -115,7 +115,7 @@ describe('createSelectableList', () => {
 
   it('noWrapStopsAtEndsAndReportsPastEnd', () => {
     list.destroy();
-    const onPastEnd = vi.fn();
+    const onPastEnd = vi.fn<() => void>();
     list = createSelectableList(root, { itemSelector: '.item', onChoose, numberKeys: false, wrap: false, onPastEnd });
     key('ArrowUp');
     expect(list.selected()).toBe(0);

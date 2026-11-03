@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { initContactFlow } from '../../src/scripts/contact';
 
 const FORM = `
@@ -22,11 +22,11 @@ const visible = (step: string) => !$(`[data-step="${step}"]`).classList.contains
 const status = () => $('[data-status]').textContent;
 
 describe('initContactFlow', () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeEach(() => {
     document.body.innerHTML = FORM;
-    fetchMock = vi.fn();
+    fetchMock = vi.fn<typeof fetch>();
     initContactFlow($<HTMLFormElement>('form'), { fetch: fetchMock });
   });
 
@@ -101,7 +101,7 @@ describe('initContactFlow', () => {
     fill('#c-message', 'Hello');
     key($('[data-step="confirm"]'), 'y');
     await vi.waitFor(() => expect(status()).toBe('message sent ✓'));
-    const [url, init] = fetchMock.mock.calls[0];
+    const [url, init] = fetchMock.mock.calls[0] as [string, { headers: Record<string, string>; body: string }];
     expect(url).toBe('/api/contact');
     expect(init.headers.Accept).toBe('application/json');
     expect(JSON.parse(init.body)).toEqual({ name: 'Ada', email: 'ada@example.com', message: 'Hello', website: '' });

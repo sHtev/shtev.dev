@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { initLanding, initPage } from '../../src/scripts/page';
 import { typeNodes } from '../../src/scripts/typing';
 
@@ -43,7 +43,7 @@ describe('typeNodes', () => {
 describe('initPage', () => {
   let content: HTMLElement;
   let actions: HTMLElement;
-  let navigate: ReturnType<typeof vi.fn>;
+  let navigate: Mock<(href: string) => void>;
   let page: ReturnType<typeof initPage>;
 
   beforeEach(() => {
@@ -54,7 +54,7 @@ describe('initPage', () => {
       <input id="field" />`;
     content = document.getElementById('content')!;
     actions = document.getElementById('actions')!;
-    navigate = vi.fn();
+    navigate = vi.fn<(href: string) => void>();
   });
 
   afterEach(() => {
@@ -250,7 +250,7 @@ describe('initLanding', () => {
     document.body.innerHTML = `
       <p><span id="prompt"></span><span id="cursor" class="cursor"> </span></p>
       <nav class="menu"><a class="item" href="/about/" data-command="cat about.md">1. about</a></nav>`;
-    const navigate = vi.fn();
+    const navigate = vi.fn<(href: string) => void>();
     const cursorEl = document.getElementById('cursor')!;
     const landing = initLanding({
       promptEl: document.getElementById('prompt')!,
