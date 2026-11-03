@@ -32,6 +32,9 @@ test('jsFlowSendsMessage', async ({ page }) => {
   await expect(page.getByText('send? [y/n]')).toBeVisible();
   await page.keyboard.press('y');
   await expect(page.getByText('message sent ✓')).toBeVisible();
+  await expect(page.getByLabel('name:')).toBeHidden();
+  await expect(page.getByRole('link', { name: '[ back ]' })).toBeFocused();
+  await expect(page.getByRole('link', { name: '[ back ]' })).toHaveClass(/sel/);
   expect(posted).toMatchObject({ name: 'Ada', email: 'ada@example.com', message: 'Hello there' });
 });
 

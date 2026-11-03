@@ -23,11 +23,13 @@ const status = () => $('[data-status]').textContent;
 
 describe('initContactFlow', () => {
   let fetchMock: Mock<typeof fetch>;
+  let onSent: Mock<() => void>;
 
   beforeEach(() => {
     document.body.innerHTML = FORM;
     fetchMock = vi.fn<typeof fetch>();
-    initContactFlow($<HTMLFormElement>('form'), { fetch: fetchMock });
+    onSent = vi.fn<() => void>();
+    initContactFlow($<HTMLFormElement>('form'), { fetch: fetchMock, onSent });
   });
 
   function fill(sel: string, value: string) {
@@ -105,6 +107,39 @@ describe('initContactFlow', () => {
     expect(url).toBe('/api/contact');
     expect(init.headers.Accept).toBe('application/json');
     expect(JSON.parse(init.body)).toEqual({ name: 'Ada', email: 'ada@example.com', message: 'Hello', website: '' });
+  });
+
+  it('plainLinkHiddenFromMessageOn', () => {
+    const plainHidden = () => $('[data-plain]').classList.contains('hidden');
+    fill('#c-name', 'Ada');
+    fill('#c-email', 'ada@example.com');
+    expect(plainHidden()).toBe(true);
+    fill('#c-message', 'Hello');
+    key($('[data-step="confirm"]'), 'n');
+    expect(plainHidden()).toBe(false);
+  });
+
+  it('sentHidesFormAndCallsOnSent', async () => {
+    fetchMock.mockResolvedValue(new Response('{}', { status: 200 }));
+    fill('#c-name', 'Ada');
+    fill('#c-email', 'ada@example.com');
+    fill('#c-message', 'Hello');
+    key($('[data-step="confirm"]'), 'y');
+    await vi.waitFor(() => expect(onSent).toHaveBeenCalledOnce());
+    for (const step of ['name', 'email', 'message', 'confirm']) expect(visible(step)).toBe(false);
+    expect($('.submit').classList.contains('hidden')).toBe(true);
+    expect(status()).toBe('message sent ✓');
+  });
+
+  it('failedSendKeepsForm', async () => {
+    fetchMock.mockResolvedValue(new Response('{}', { status: 500 }));
+    fill('#c-name', 'Ada');
+    fill('#c-email', 'ada@example.com');
+    fill('#c-message', 'Hello');
+    key($('[data-step="confirm"]'), 'y');
+    await vi.waitFor(() => expect(status()).toMatch(/^error/));
+    expect(onSent).not.toHaveBeenCalled();
+    expect(visible('confirm')).toBe(true);
   });
 
   it('rendersRateLimit', async () => {

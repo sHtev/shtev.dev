@@ -6,6 +6,8 @@ const FALLBACK_ERROR = 'error: something went wrong, email hello@shtev.dev';
 
 export interface ContactFlowOptions {
   fetch?: typeof fetch;
+  /** Called once a message has gone, e.g. to select [ back ]. */
+  onSent?: () => void;
 }
 
 /**
@@ -28,6 +30,8 @@ export function initContactFlow(form: HTMLFormElement, opts: ContactFlowOptions 
     current = name;
     const upTo = STEPS.indexOf(name);
     STEPS.forEach((s, i) => step(s).classList.toggle('hidden', i > upTo));
+    // Once the message is being written, switching to the plain form would only get in the way.
+    plainLink?.classList.toggle('hidden', upTo >= STEPS.indexOf('message'));
     (field(name) ?? step(name)).focus();
   };
 
@@ -52,6 +56,11 @@ export function initContactFlow(form: HTMLFormElement, opts: ContactFlowOptions 
       if (res.ok) {
         say('message sent ✓');
         form.reset();
+        // The prompts go; only the status line stays.
+        STEPS.forEach((s) => step(s).classList.add('hidden'));
+        submitRow.classList.add('hidden');
+        plainLink?.classList.add('hidden');
+        opts.onSent?.();
       } else {
         say(res.status === 429 ? 'error: too many messages, try later' : FALLBACK_ERROR);
       }
