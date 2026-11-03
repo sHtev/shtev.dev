@@ -1,9 +1,9 @@
 # GitHub Actions logs in to AWS with OIDC: short-lived credentials, no stored AWS keys.
 
-variable "github_repo" {
-  description = "owner/name of the GitHub repository allowed to assume the roles."
+variable "github_subject" {
+  description = "OIDC subject prefix for the repository: GitHub's immutable form, owner@id/name@id."
   type        = string
-  default     = "sHtev/shtev.dev"
+  default     = "repo:sHtev@5445348/shtev.dev@1444334250"
 }
 
 resource "aws_iam_openid_connect_provider" "github" {
@@ -29,7 +29,7 @@ resource "aws_iam_role" "github_plan" {
       Action    = "sts:AssumeRoleWithWebIdentity"
       Condition = {
         StringEquals = merge(local.github_audience, {
-          "token.actions.githubusercontent.com:sub" = "repo:${var.github_repo}:pull_request"
+          "token.actions.githubusercontent.com:sub" = "${var.github_subject}:pull_request"
         })
       }
     }]
@@ -77,7 +77,7 @@ resource "aws_iam_role" "github_deploy" {
       Action    = "sts:AssumeRoleWithWebIdentity"
       Condition = {
         StringEquals = merge(local.github_audience, {
-          "token.actions.githubusercontent.com:sub" = "repo:${var.github_repo}:environment:production"
+          "token.actions.githubusercontent.com:sub" = "${var.github_subject}:environment:production"
         })
       }
     }]
