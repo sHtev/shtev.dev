@@ -10,8 +10,9 @@ export function startRotation(el: HTMLElement, lines: string[], opts: RotationOp
   let timer: ReturnType<typeof setTimeout> | undefined;
   const stop = () => clearTimeout(timer);
 
+  // Reduced motion: no typing, but still a different command each visit.
   if (opts.reducedMotion || lines.length === 0) {
-    el.textContent = lines[0] ?? '';
+    el.textContent = lines[Math.floor(Math.random() * lines.length)] ?? '';
     return { stop };
   }
 

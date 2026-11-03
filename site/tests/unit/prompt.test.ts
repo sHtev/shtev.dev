@@ -43,11 +43,13 @@ describe('startRotation', () => {
     expect(el.textContent).toBe('wx');
   });
 
-  it('reducedMotionStatic', () => {
+  it('reducedMotionStaticRandomLine', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.9);
     startRotation(el, LINES, { ...OPTS, reducedMotion: true });
-    expect(el.textContent).toBe('abc');
+    expect(el.textContent).toBe('wxyz');
     vi.advanceTimersByTime(60_000);
-    expect(el.textContent).toBe('abc');
+    expect(el.textContent).toBe('wxyz');
+    vi.restoreAllMocks();
   });
 
   it('stopHalts', () => {
