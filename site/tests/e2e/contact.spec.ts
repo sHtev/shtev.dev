@@ -29,7 +29,7 @@ test('jsFlowSendsMessage', async ({ page }) => {
   await page.keyboard.press('Enter');
   await page.keyboard.type('Hello there');
   await page.keyboard.press('Enter');
-  await expect(page.getByText('send? [y/n]')).toBeVisible();
+  await expect(page.getByText('send?')).toBeVisible();
   await page.keyboard.press('y');
   await expect(page.getByText('message sent ✓')).toBeVisible();
   await expect(page.getByLabel('name:')).toBeHidden();
@@ -54,15 +54,6 @@ test('noJsFormPostsAndShowsSent', async ({ browser }) => {
   await ctx.close();
 });
 
-test('plainFormToggle', async ({ page }) => {
-  await page.goto('/contact/');
-  await page.getByRole('link', { name: '[ plain form ]' }).click();
-  await expect(page.getByLabel('name:')).toBeVisible();
-  await expect(page.getByLabel('email:')).toBeVisible();
-  await expect(page.getByLabel('message:')).toBeVisible();
-  await expect(page.getByRole('button', { name: '[ send ]' })).toBeVisible();
-});
-
 test('showsHelloAddress', async ({ page }) => {
   await page.goto('/contact/');
   await expect(page.getByRole('link', { name: 'hello@shtev.dev' })).toHaveAttribute('href', 'mailto:hello@shtev.dev');
@@ -79,13 +70,25 @@ test('confirmPromptNotHiddenBehindFooter', async ({ page }) => {
   await page.keyboard.press('Enter');
   await page.keyboard.type('Hello');
   await page.keyboard.press('Enter');
-  const confirm = (await page.getByText('send? [y/n]').boundingBox())!;
+  const confirm = (await page.getByText('send?').boundingBox())!;
   const footer = (await page.locator('footer').boundingBox())!;
   expect(confirm.y + confirm.height).toBeLessThanOrEqual(footer.y);
 });
 
-test('plainFormLinkLooksLikeAnAction', async ({ page }) => {
+test('buttonsOnlyFlowSendsMessage', async ({ page }) => {
+  await page.route('**/api/contact', (route) => route.fulfill({ status: 200, body: '{"ok":true}' }));
   await page.goto('/contact/');
-  const link = page.getByRole('link', { name: '[ plain form ]' });
-  expect(await link.evaluate((el) => getComputedStyle(el).textDecorationLine)).toBe('none');
+  await page.getByLabel('name:').fill('Ada');
+  await page.getByRole('button', { name: '[ next ]' }).click();
+  await page.getByLabel('email:').fill('ada@example.com');
+  await page.getByRole('button', { name: '[ next ]' }).click();
+  await page.getByLabel('message:').fill('Hello');
+  await page.getByRole('button', { name: '[ next ]' }).click();
+  await page.getByRole('button', { name: '[ yes ]' }).click();
+  await expect(page.getByText('message sent ✓')).toBeVisible();
+});
+
+test('noPlainFormLink', async ({ page }) => {
+  await page.goto('/contact/');
+  await expect(page.getByRole('link', { name: '[ plain form ]' })).toHaveCount(0);
 });

@@ -7,11 +7,11 @@ const FORM = `
     <p class="field" data-step="email"><label for="c-email">email:</label> <input id="c-email" name="email" type="email" required /></p>
     <p class="field" data-step="message"><label for="c-message">message:</label> <textarea id="c-message" name="message" required></textarea></p>
     <p class="hp"><input name="website" /></p>
-    <p class="field" data-step="confirm" tabindex="-1">send? [y/n]</p>
+    <p class="next hidden"><button type="button" data-next>[ next ]</button></p>
+    <p class="field" data-step="confirm" tabindex="-1">send? <button type="button" data-yes>[ yes ]</button> <button type="button" data-no>[ no ]</button></p>
     <p class="submit"><button type="submit">[ send ]</button></p>
     <p data-status role="status"></p>
-  </form>
-  <a href="#" data-plain>[ plain form ]</a>`;
+  </form>`;
 
 function key(target: Element, key: string, extra: KeyboardEventInit = {}) {
   target.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...extra }));
@@ -109,16 +109,6 @@ describe('initContactFlow', () => {
     expect(JSON.parse(init.body)).toEqual({ name: 'Ada', email: 'ada@example.com', message: 'Hello', website: '' });
   });
 
-  it('plainLinkHiddenFromMessageOn', () => {
-    const plainHidden = () => $('[data-plain]').classList.contains('hidden');
-    fill('#c-name', 'Ada');
-    fill('#c-email', 'ada@example.com');
-    expect(plainHidden()).toBe(true);
-    fill('#c-message', 'Hello');
-    key($('[data-step="confirm"]'), 'n');
-    expect(plainHidden()).toBe(false);
-  });
-
   it('sentHidesFormAndCallsOnSent', async () => {
     fetchMock.mockResolvedValue(new Response('{}', { status: 200 }));
     fill('#c-name', 'Ada');
@@ -128,6 +118,7 @@ describe('initContactFlow', () => {
     await vi.waitFor(() => expect(onSent).toHaveBeenCalledOnce());
     for (const step of ['name', 'email', 'message', 'confirm']) expect(visible(step)).toBe(false);
     expect($('.submit').classList.contains('hidden')).toBe(true);
+    expect($('.next').classList.contains('hidden')).toBe(true);
     expect(status()).toBe('message sent ✓');
   });
 
@@ -140,6 +131,48 @@ describe('initContactFlow', () => {
     await vi.waitFor(() => expect(status()).toMatch(/^error/));
     expect(onSent).not.toHaveBeenCalled();
     expect(visible('confirm')).toBe(true);
+  });
+
+  it('nextButtonAdvances', () => {
+    expect($('.next').classList.contains('hidden')).toBe(false);
+    $<HTMLInputElement>('#c-name').value = 'Ada';
+    $<HTMLButtonElement>('[data-next]').click();
+    expect(visible('email')).toBe(true);
+    expect(document.activeElement).toBe($('#c-email'));
+  });
+
+  it('nextButtonShowsErrors', () => {
+    $<HTMLButtonElement>('[data-next]').click();
+    expect(status()).toBe('error: name required');
+    expect(visible('email')).toBe(false);
+  });
+
+  it('nextHiddenAtConfirmAndYesFocused', () => {
+    fill('#c-name', 'Ada');
+    fill('#c-email', 'ada@example.com');
+    fill('#c-message', 'Hello');
+    expect($('.next').classList.contains('hidden')).toBe(true);
+    expect(document.activeElement).toBe($('[data-yes]'));
+  });
+
+  it('yesButtonSends', async () => {
+    fetchMock.mockResolvedValue(new Response('{}', { status: 200 }));
+    fill('#c-name', 'Ada');
+    fill('#c-email', 'ada@example.com');
+    fill('#c-message', 'Hello');
+    $<HTMLButtonElement>('[data-yes]').click();
+    await vi.waitFor(() => expect(status()).toBe('message sent ✓'));
+    expect(fetchMock).toHaveBeenCalledOnce();
+  });
+
+  it('noButtonReturnsToName', () => {
+    fill('#c-name', 'Ada');
+    fill('#c-email', 'ada@example.com');
+    fill('#c-message', 'Hello');
+    $<HTMLButtonElement>('[data-no]').click();
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(document.activeElement).toBe($('#c-name'));
+    expect($('.next').classList.contains('hidden')).toBe(false);
   });
 
   it('rendersRateLimit', async () => {
@@ -160,10 +193,4 @@ describe('initContactFlow', () => {
     await vi.waitFor(() => expect(status()).toBe('error: something went wrong, email hello@shtev.dev'));
   });
 
-  it('plainFormShowsEverything', () => {
-    $<HTMLAnchorElement>('[data-plain]').click();
-    for (const step of ['name', 'email', 'message']) expect(visible(step)).toBe(true);
-    expect(visible('confirm')).toBe(false);
-    expect($('.submit').classList.contains('hidden')).toBe(false);
-  });
 });

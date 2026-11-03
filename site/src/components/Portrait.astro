@@ -40,9 +40,12 @@ import portrait from '../assets/portrait.txt?raw';
       0 0 16px rgba(124, 252, 124, 0.2);
   }
 
+  /* Narrow screens: no room beside the text, so it follows it. */
   @media (max-width: 860px) {
     .portrait {
-      display: none;
+      position: static;
+      width: fit-content;
+      margin-top: 1.5em;
     }
   }
 </style>

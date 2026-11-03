@@ -1,6 +1,6 @@
 ---
 // A plain, accessible form that works without JavaScript. With JS, contact.ts shows the
-// same inputs one at a time as terminal prompts.
+// same inputs one at a time as terminal prompts, with [ next ] and [ yes ]/[ no ] buttons.
 ---
 
 <form class="contact-form" method="post" action="/api/contact" data-contact>
@@ -20,11 +20,13 @@
     <label for="c-website">leave this empty</label>
     <input id="c-website" name="website" tabindex="-1" autocomplete="off" />
   </p>
-  <p class="field hidden" data-step="confirm" tabindex="-1">send? [y/n]</p>
+  <p class="next hidden"><button type="button" data-next>[ next ]</button></p>
+  <p class="field hidden" data-step="confirm">
+    send? <button type="button" data-yes>[ yes ]</button> <button type="button" data-no>[ no ]</button>
+  </p>
   <p class="submit"><button type="submit">[ send ]</button></p>
   <p class="status" data-status role="status" aria-live="polite"></p>
 </form>
-<p><a href="#" class="hidden" data-plain>[ plain form ]</a></p>
 
 <style>
   .contact-form {
@@ -79,25 +81,16 @@
     border-bottom-color: var(--fg);
   }
 
-  [data-step='confirm']:focus {
-    outline: none;
-  }
-
   button {
     padding: 0;
     cursor: pointer;
   }
 
-  button:focus-visible {
+  button:focus {
     outline: none;
     background: var(--fg);
     color: var(--bg);
     text-shadow: none;
-  }
-
-  /* An action, like [ back ]: no underline. */
-  [data-plain] {
-    text-decoration: none;
   }
 
   /* Honeypot: hidden from people, visible to naive bots. */

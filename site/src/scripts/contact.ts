@@ -12,7 +12,7 @@ export interface ContactFlowOptions {
 
 /**
  * Turns the plain contact form into terminal prompts shown one at a time.
- * The same real, labelled inputs are used throughout; [ plain form ] shows them all at once.
+ * Enter or [ next ] moves on; y/n or [ yes ]/[ no ] answers the confirm prompt.
  */
 export function initContactFlow(form: HTMLFormElement, opts: ContactFlowOptions = {}): { destroy(): void } {
   const doFetch = opts.fetch ?? window.fetch.bind(window);
@@ -20,7 +20,10 @@ export function initContactFlow(form: HTMLFormElement, opts: ContactFlowOptions 
   const field = (name: Step) => step(name).querySelector<HTMLInputElement | HTMLTextAreaElement>('input, textarea');
   const submitRow = form.querySelector<HTMLElement>('.submit')!;
   const statusEl = form.querySelector<HTMLElement>('[data-status]')!;
-  const plainLink = document.querySelector<HTMLElement>('[data-plain]');
+  const nextRow = form.querySelector<HTMLElement>('.next')!;
+  const nextButton = nextRow.querySelector<HTMLButtonElement>('[data-next]')!;
+  const yesButton = form.querySelector<HTMLButtonElement>('[data-yes]')!;
+  const noButton = form.querySelector<HTMLButtonElement>('[data-no]')!;
   let current: Step = 'name';
   let sending = false;
 
@@ -30,9 +33,8 @@ export function initContactFlow(form: HTMLFormElement, opts: ContactFlowOptions 
     current = name;
     const upTo = STEPS.indexOf(name);
     STEPS.forEach((s, i) => step(s).classList.toggle('hidden', i > upTo));
-    // Once the message is being written, switching to the plain form would only get in the way.
-    plainLink?.classList.toggle('hidden', upTo >= STEPS.indexOf('message'));
-    (field(name) ?? step(name)).focus();
+    nextRow.classList.toggle('hidden', name === 'confirm');
+    (field(name) ?? yesButton).focus();
   };
 
   const value = (name: Step) => field(name)?.value.trim() ?? '';
@@ -59,7 +61,7 @@ export function initContactFlow(form: HTMLFormElement, opts: ContactFlowOptions 
         // The prompts go; only the status line stays.
         STEPS.forEach((s) => step(s).classList.add('hidden'));
         submitRow.classList.add('hidden');
-        plainLink?.classList.add('hidden');
+        nextRow.classList.add('hidden');
         opts.onSent?.();
       } else {
         say(res.status === 429 ? 'error: too many messages, try later' : FALLBACK_ERROR);
@@ -71,38 +73,41 @@ export function initContactFlow(form: HTMLFormElement, opts: ContactFlowOptions 
     }
   };
 
-  const onKey = (e: KeyboardEvent) => {
-    if (form.classList.contains('plain') || sending) return;
-    if (current === 'confirm') {
-      if (e.key === 'y' || e.key === 'Y') void send();
-      else if (e.key === 'n' || e.key === 'N') {
-        say('');
-        show('name');
-      } else if (e.key === 'Backspace') {
-        show('message'); // back to editing, never off the page
-      } else return;
-      e.preventDefault();
-      return;
-    }
-    // Enter moves on; Shift+Enter keeps its newline in the message.
-    if (e.key !== 'Enter' || e.shiftKey) return;
-    e.preventDefault();
+  const advance = () => {
     const error = problem(current);
     if (error) return void say(error);
     say('');
     show(STEPS[STEPS.indexOf(current) + 1]);
   };
 
-  const onPlain = (e: Event) => {
-    e.preventDefault();
-    form.classList.add('plain');
-    STEPS.forEach((s) => step(s).classList.toggle('hidden', s === 'confirm'));
-    submitRow.classList.remove('hidden');
-    plainLink?.classList.add('hidden');
-    field('name')?.focus();
+  const restart = () => {
+    say('');
+    show('name');
   };
 
-  // Plain form submits still go through fetch when JS is on, so the page doesn't change.
+  const onKey = (e: KeyboardEvent) => {
+    if (sending) return;
+    if (current === 'confirm') {
+      if (e.key === 'y' || e.key === 'Y') void send();
+      else if (e.key === 'n' || e.key === 'N') restart();
+      else if (e.key === 'Backspace') {
+        show('message'); // back to editing, never off the page
+      } else return;
+      e.preventDefault();
+      return;
+    }
+    // Enter moves on; Shift+Enter keeps its newline in the message.
+    if (e.key !== 'Enter' || e.shiftKey || e.target === nextButton) return;
+    e.preventDefault();
+    advance();
+  };
+
+  const onNext = () => advance();
+  const onYes = () => {
+    if (!sending) void send();
+  };
+
+  // The no-JS form's [ send ] still goes through fetch when JS is on, so the page doesn't change.
   const onSubmit = (e: SubmitEvent) => {
     e.preventDefault();
     const error = (['name', 'email', 'message'] as Step[]).map(problem).find(Boolean);
@@ -112,17 +117,20 @@ export function initContactFlow(form: HTMLFormElement, opts: ContactFlowOptions 
 
   form.classList.add('terminal');
   submitRow.classList.add('hidden');
-  plainLink?.classList.remove('hidden');
   form.addEventListener('keydown', onKey);
   form.addEventListener('submit', onSubmit);
-  plainLink?.addEventListener('click', onPlain);
+  nextButton.addEventListener('click', onNext);
+  yesButton.addEventListener('click', onYes);
+  noButton.addEventListener('click', restart);
   show('name');
 
   return {
     destroy() {
       form.removeEventListener('keydown', onKey);
       form.removeEventListener('submit', onSubmit);
-      plainLink?.removeEventListener('click', onPlain);
+      nextButton.removeEventListener('click', onNext);
+      yesButton.removeEventListener('click', onYes);
+      noButton.removeEventListener('click', restart);
     },
   };
 }

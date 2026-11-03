@@ -16,10 +16,17 @@ test('portraitInsetWide', async ({ page }) => {
   expect(font).toContain('VT323');
 });
 
-test('portraitHiddenNarrow', async ({ page }) => {
-  await page.setViewportSize({ width: 800, height: 700 });
+test('portraitBelowTextNarrow', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 800 });
   await page.goto('/about/');
-  await expect(page.getByRole('img', { name: label })).toBeHidden();
+  await expect(page.getByRole('link', { name: '[ back ]' })).toHaveClass(/sel/); // typing finished
+  const panel = page.getByRole('img', { name: label });
+  await panel.scrollIntoViewIfNeeded();
+  await expect(panel).toBeVisible();
+  const box = (await panel.boundingBox())!;
+  const text = (await page.locator('[data-content]').boundingBox())!;
+  expect(box.y).toBeGreaterThanOrEqual(text.y + text.height);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });
 
 test('portraitDoesNotCoverText', async ({ page }) => {
