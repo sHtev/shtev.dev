@@ -2,7 +2,7 @@
 title: Comics tracker
 summary: catalogue of a Spider-Man comics collection
 url: https://spidey.comics-tracker.online
-order: 2
+order: 4
 draft: false
 ---
 
