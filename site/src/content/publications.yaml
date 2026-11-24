@@ -1,0 +1,352 @@
+# Steve's publications. Sources: Google Scholar (titles, venues) and OpenAlex (authors, DOIs, free copies).
+# selected: true puts an entry in "Selected papers" (with its summary), in `order`; everything is in the full list.
+
+# --- PhD and follow-on work (York, then Newcastle with Michael Harrison) ---
+- id: phd-thesis
+  title: Specifying the Ubiquitous User Interface Using Interaction Style
+  authors: [Stephen W. Gilroy]
+  venue: PhD thesis, University of York, Department of Computer Science
+  year: 2006
+  group: phd
+  kind: thesis
+  openUrl: /research/gilroy-phd-thesis.pdf
+  selected: true
+  order: 0
+  summary: >-
+    One description of an application's interface, which adapts itself to whatever device you have to hand
+    (a phone, a PDA, a desktop or a voice system) by choosing a suitable interaction style, such as menus,
+    forms or a step-by-step wizard. The thesis defines a language for those descriptions and a working
+    prototype system that runs them.
+
+- id: interaction-style-2002
+  title: Using Interaction Style to Develop User Interfaces for Multiple Devices
+  authors: [Stephen W. Gilroy, Michael D. Harrison]
+  venue: DIRC (Dependability Interdisciplinary Research Collaboration) project paper
+  year: 2002
+  group: phd
+  kind: paper
+  selected: false
+
+- id: device-to-hand-2004
+  title: Using Interaction Style to Match the Ubiquitous User Interface to the Device-to-Hand
+  authors: [Stephen W. Gilroy, Michael D. Harrison]
+  venue: Engineering Human Computer Interaction and Interactive Systems (EHCI-DSVIS 2004), Springer LNCS 3425
+  year: 2004
+  group: phd
+  kind: paper
+  doi: https://doi.org/10.1007/11431879_22
+  openUrl: https://doi.org/10.25405/ncl.34618713
+  selected: true
+  order: 8
+  summary: >-
+    The core idea of the PhD: build the interface from interaction styles rather than fixed screens,
+    so the same service can present itself well on very different devices.
+
+- id: dsvis-2005-proceedings
+  title: "Interactive Systems: Design, Specification, and Verification (DSVIS 2005)"
+  authors: [Stephen W. Gilroy, Michael D. Harrison]
+  venue: Springer LNCS 3941 (editors)
+  year: 2006
+  group: phd
+  kind: edited
+  doi: https://doi.org/10.1007/11752707
+  openUrl: https://doi.org/10.25405/ncl.34124184
+  selected: true
+  order: 10
+  summary: >-
+    Co-edited the proceedings of the 12th international workshop on designing and verifying interactive
+    systems, held at Newcastle in 2005.
+
+- id: sbml-2008
+  title: "SBML: A User Interface Mark-up Language Based on Interaction Style"
+  authors: [Stephen W. Gilroy, Michael D. Harrison]
+  venue: International Journal of Web Engineering and Technology 4(2), 207–234
+  year: 2008
+  group: phd
+  kind: journal
+  doi: https://doi.org/10.1504/ijwet.2008.018098
+  openUrl: https://doi.org/10.25405/ncl.34641054
+  selected: true
+  order: 9
+  summary: >-
+    A mark-up language that separates what a service does from how you interact with it, so each device
+    can pick the style of interface that suits it, shown with an online banking example.
+
+# --- Crossmodal and public displays (Newcastle, with Patrick Olivier) ---
+- id: crossmodal-attention-2006
+  title: Crossmodal Attention in Public-Private Displays
+  authors: [Patrick L. Olivier, Stephen W. Gilroy, Han Cao, Daniel G. Jackson, Christian Kray]
+  venue: ACS/IEEE International Conference on Pervasive Services (ICPS 2006)
+  year: 2006
+  group: crossmodal
+  kind: paper
+  doi: https://doi.org/10.1109/perser.2006.1652201
+  openUrl: https://doi.org/10.25405/ncl.34126689
+  selected: false
+
+- id: crossmodal-ambient-displays-2007
+  title: Crossmodal Ambient Displays
+  authors: [Patrick L. Olivier, Han Cao, Stephen W. Gilroy, Daniel G. Jackson]
+  venue: "People and Computers XX: Engage (HCI 2006), Springer"
+  year: 2007
+  group: crossmodal
+  kind: paper
+  doi: https://doi.org/10.1007/978-1-84628-664-3_1
+  openUrl: https://doi.org/10.25405/ncl.34126779
+  selected: true
+  order: 7
+  summary: >-
+    CrossFlow, a public display for finding your way around a building, which shows several people's
+    directions at once: each person's phone buzzes in time with the column and row of the display that holds
+    their information. In early studies people navigated better than with maps, and with less mental effort.
+
+- id: crossboard-2007
+  title: "CROSSBOARD: Crossmodal Access of Dense Public Displays"
+  authors: [Stephen W. Gilroy, Patrick L. Olivier, Han Cao, Daniel G. Jackson, Christian Kray, Daniel Lin]
+  venue: Newcastle University School of Computing Science technical report
+  year: 2007
+  group: crossmodal
+  kind: report
+  openUrl: https://doi.org/10.25405/ncl.34127088
+  selected: false
+
+# --- Affective and multimodal interaction (Teesside, with Marc Cavazza) ---
+- id: ar-art-installation-2007
+  title: An Emotionally Responsive AR Art Installation
+  authors: [Stephen W. Gilroy, Marc Cavazza, Rémi Chaignon, Satu-Marja Mäkelä, Markus Niiranen, Elisabeth André, Thurid Vogt, Mark Billinghurst, Hartmut Seichter, Maurice Benayoun]
+  venue: International Symposium on Mixed and Augmented Reality (ISMAR 2007) workshop
+  year: 2007
+  group: affective
+  kind: paper
+  selected: false
+
+- id: e-tree-2008
+  title: "E-Tree: Emotionally Driven Augmented Reality Art"
+  authors: [Stephen W. Gilroy, Marc Cavazza, Rémi Chaignon, Satu-Marja Mäkelä, Markus Niiranen, Elisabeth André, Thurid Vogt, Jérôme Urbain, Mark Billinghurst, Hartmut Seichter, Maurice Benayoun]
+  venue: ACM International Conference on Multimedia (ACM MM 2008)
+  year: 2008
+  group: affective
+  kind: paper
+  doi: https://doi.org/10.1145/1459359.1459529
+  selected: true
+  order: 4
+  summary: >-
+    An augmented-reality artwork: a virtual tree that grows according to how the people watching it feel,
+    read from their voices, faces and movement.
+
+- id: e-tree-ace-2008
+  title: "E-Tree: Affective Interactive Art"
+  authors: [Stephen W. Gilroy, Marc Cavazza, Rémi Chaignon]
+  venue: Advances in Computer Entertainment Technology (ACE 2008), demo
+  year: 2008
+  group: affective
+  kind: paper
+  doi: https://doi.org/10.1145/1501750.1501843
+  selected: false
+
+- id: affective-model-ux-2008
+  title: An Affective Model of User Experience for Interactive Art
+  authors: [Stephen W. Gilroy, Marc Cavazza, Rémi Chaignon, Satu-Marja Mäkelä, Markus Niiranen, Elisabeth André, Thurid Vogt, Jérôme Urbain, Hartmut Seichter, Mark Billinghurst, Maurice Benayoun]
+  venue: Advances in Computer Entertainment Technology (ACE 2008)
+  year: 2008
+  group: affective
+  kind: paper
+  doi: https://doi.org/10.1145/1501750.1501774
+  openUrl: https://research.tees.ac.uk/en/publications/bf84a76d-a104-4ccb-9078-855ae262a2b9
+  selected: false
+
+- id: pad-fusion-2009
+  title: PAD-Based Multimodal Affective Fusion
+  authors: [Stephen W. Gilroy, Marc Cavazza, Markus Niiranen, Elisabeth André, Thurid Vogt, Jérôme Urbain, Maurice Benayoun, Hartmut Seichter, Mark Billinghurst]
+  venue: Affective Computing and Intelligent Interaction (ACII 2009)
+  year: 2009
+  group: affective
+  kind: paper
+  doi: https://doi.org/10.1109/acii.2009.5349552
+  selected: true
+  order: 5
+  summary: >-
+    Combining emotional signals from several sources (speech, gesture, facial expression) into a single
+    real-time estimate of how someone feels, using a three-dimensional model of emotion.
+
+- id: vocal-emotion-2009
+  title: "Real-Time Vocal Emotion Recognition in Artistic Installations and Interactive Storytelling: Experiences and Lessons Learnt from CALLAS and IRIS"
+  authors: [Thurid Vogt, Elisabeth André, Johannes Wagner, Stephen W. Gilroy, Fred Charles, Marc Cavazza]
+  venue: Affective Computing and Intelligent Interaction (ACII 2009)
+  year: 2009
+  group: affective
+  kind: paper
+  selected: false
+
+- id: affective-trajectories-2009
+  title: Using Affective Trajectories to Describe States of Flow in Interactive Art
+  authors: [Stephen W. Gilroy, Marc Cavazza, Maurice Benayoun]
+  venue: Advances in Computer Entertainment Technology (ACE 2009)
+  year: 2009
+  group: affective
+  kind: paper
+  doi: https://doi.org/10.1145/1690388.1690416
+  openUrl: https://research.tees.ac.uk/en/publications/ef2413d9-2dbf-4d9a-b016-15234f3f1115
+  selected: true
+  order: 6
+  summary: >-
+    Using the same sensor data that drives an interactive artwork to measure visitors' experience,
+    following how their emotional state moves over time to spot when they are absorbed ("in flow").
+
+- id: ambient-artwork-2009
+  title: Affective Interfaces and Ambient Artwork
+  authors: [Stephen W. Gilroy, Marc Cavazza]
+  venue: Proceedings of AmI 2009, 189–192
+  year: 2009
+  group: affective
+  kind: paper
+  selected: false
+
+- id: common-touch-2010
+  title: "The Common Touch: Aesthetic and Affective Interaction in Semi-Public Settings"
+  authors: [Céline Coutrix, Ivan Avdouevski, Giulio Jacucci, Valentin Vervondel, Stephen W. Gilroy, Marc Cavazza]
+  venue: Pervasive 2010 Workshop on Designing for Crowds
+  year: 2010
+  group: affective
+  kind: paper
+  openUrl: https://hal.science/hal-04447835
+  selected: false
+
+- id: affective-film-2010
+  title: "Users' Response to Affective Film Content: A Narrative Perspective"
+  authors: [Luca Canini, Stephen W. Gilroy, Marc Cavazza, Riccardo Leonardi, Sergio Benini]
+  venue: Content-Based Multimedia Indexing (CBMI 2010)
+  year: 2010
+  group: affective
+  kind: paper
+  selected: false
+
+- id: evaluating-fusion-2011
+  title: Evaluating Multimodal Affective Fusion Using Physiological Signals
+  authors: [Stephen W. Gilroy, Marc Cavazza, Valentin Vervondel]
+  venue: ACM Intelligent User Interfaces (IUI 2011)
+  year: 2011
+  group: affective
+  kind: paper
+  doi: https://doi.org/10.1145/1943403.1943413
+  openUrl: https://research.tees.ac.uk/ws/files/6761144/128134.pdf
+  selected: false
+
+- id: multi-user-fusion-2011
+  title: Supporting Multi-User Participation with Affective Multimodal Fusion
+  authors: [Céline Coutrix, Giulio Jacucci, Ivan Avdouevski, Valentin Vervondel, Marc Cavazza, Stephen W. Gilroy, Lorenza Parisi]
+  venue: Creating, Connecting and Collaborating through Computing (C5 2011)
+  year: 2011
+  group: affective
+  kind: paper
+  doi: https://doi.org/10.1109/c5.2011.14
+  openUrl: https://hal.science/hal-04447185v1/file/C5-SupportingMultiUser-Coutrix.pdf
+  selected: false
+
+- id: pinter-2012
+  title: "PINTER: Interactive Storytelling with Physiological Input"
+  authors: [Stephen W. Gilroy, Julie Porteous, Fred Charles, Marc Cavazza]
+  venue: ACM Intelligent User Interfaces (IUI 2012), demo
+  year: 2012
+  group: affective
+  kind: paper
+  doi: https://doi.org/10.1145/2166966.2167039
+  selected: false
+
+- id: passive-interaction-2012
+  title: Exploring Passive User Interaction for Adaptive Narratives
+  authors: [Stephen W. Gilroy, Julie Porteous, Fred Charles, Marc Cavazza]
+  venue: ACM Intelligent User Interfaces (IUI 2012)
+  year: 2012
+  group: affective
+  kind: paper
+  doi: https://doi.org/10.1145/2166966.2166990
+  openUrl: https://research.tees.ac.uk/en/publications/c0fb9985-7dc7-4174-ab3c-8f2487e67198
+  selected: true
+  order: 2
+  summary: >-
+    A computer-generated story that adapts as you watch it, changing pacing, focus and character
+    relationships based on viewers' physiological responses rather than anything they deliberately do.
+
+# --- Brain-computer interfaces and neurofeedback (Teesside, with Marc Cavazza and the Tel Aviv team) ---
+- id: bci-narrative-2013
+  title: A Brain-Computer Interface to a Plan-Based Narrative
+  authors: [Stephen W. Gilroy, Julie Porteous, Fred Charles, Marc Cavazza, Eyal Soreq, Gal Raz, Limor Ikar, Ayelet Or-Borichov, Udi Ben-Arie, Ilana Klovatch, Talma Hendler]
+  venue: International Joint Conference on Artificial Intelligence (IJCAI 2013)
+  venueNote: one of the leading international AI conferences
+  year: 2013
+  group: bci
+  kind: paper
+  doi: https://doi.org/10.5555/2540128.2540415
+  openUrl: https://ijcai.org/proceedings/2013/0295.pdf
+  selected: true
+  order: 1
+  summary: >-
+    An interactive story driven by the viewer's brain activity: their empathy for the main character,
+    measured with EEG neurofeedback, steered an AI planner that generated what happened next.
+
+- id: neurofeedback-characters-2013
+  title: A Neurofeedback Approach to Supporting Characters in Virtual Stories
+  authors: [Stephen W. Gilroy, Julie Porteous, Fred Charles, Marc Cavazza, Ilana Klovatch, Gal Raz, Limor Ikar, Eyal Soreq, Udi Ben-Arie, Talma Hendler]
+  venue: 5th International Brain-Computer Interface Meeting, Graz
+  year: 2013
+  group: bci
+  kind: paper
+  doi: https://doi.org/10.3217/978-3-85125-260-6-58
+  selected: false
+
+- id: emotional-regulation-2014
+  title: Towards Emotional Regulation through Neurofeedback
+  authors: [Marc Cavazza, Fred Charles, Gábor Aranyi, Julie Porteous, Stephen W. Gilroy, Gal Raz, Jackob Nimrod Keynan, Avihay Cohen, Gilan Jackont, Yael Jacob, Eyal Soreq, Ilana Klovatch, Talma Hendler]
+  venue: Augmented Human International Conference (AH 2014)
+  year: 2014
+  group: bci
+  kind: paper
+  doi: https://doi.org/10.1145/2582051.2582093
+  selected: true
+  order: 3
+  summary: >-
+    Two working systems in which people learn to regulate their own emotional responses using live feedback
+    from their brain activity (EEG and fMRI), one of them through their feelings towards a virtual character.
+
+- id: empathic-neurofeedback-2014
+  title: Towards Empathic Neurofeedback for Interactive Storytelling
+  authors: [Marc Cavazza, Gábor Aranyi, Fred Charles, Julie Porteous, Stephen W. Gilroy, Ilana Klovatch, Gilan Jackont, Eyal Soreq, Jackob Nimrod Keynan, Avihay Cohen, Gal Raz, Talma Hendler]
+  venue: Workshop on Computational Models of Narrative (CMN 2014), OASIcs 41
+  year: 2014
+  group: bci
+  kind: paper
+  doi: https://doi.org/10.4230/oasics.cmn.2014.42
+  openUrl: https://drops.dagstuhl.de/storage/01oasics/oasics-vol041-cmn2014/OASIcs.CMN.2014.42/OASIcs.CMN.2014.42.pdf
+  selected: false
+
+- id: frontal-alpha-2014
+  title: Frontal Alpha Asymmetry Neurofeedback for Brain-Computer Interfaces
+  authors: [Marc Cavazza, Gábor Aranyi, Fred Charles, Julie Porteous, Stephen W. Gilroy, Gilan Jackont, Ilana Klovatch, Gal Raz, Jackob Nimrod Keynan, Avihay Cohen, Talma Hendler]
+  venue: 6th International Brain-Computer Interface Conference, Graz
+  year: 2014
+  group: bci
+  kind: paper
+  doi: https://doi.org/10.3217/978-3-85125-378-8-92
+  selected: false
+
+- id: virtual-agents-bci-2014
+  title: Integrating Virtual Agents in BCI Neurofeedback Systems
+  authors: [Marc Cavazza, Fred Charles, Stephen W. Gilroy, Julie Porteous, Gábor Aranyi, Gal Raz, Jackob Nimrod Keynan, Avihay Cohen, Gilan Jackont, Yael Jacob, Eyal Soreq, Ilana Klovatch, Talma Hendler]
+  venue: Virtual Reality International Conference (VRIC 2014)
+  year: 2014
+  group: bci
+  kind: paper
+  doi: https://doi.org/10.1145/2617841.2620713
+  selected: false
+
+- id: virtual-agents-bci-2015
+  title: Virtual Agents in Brain-Computer Interfaces
+  authors: [Marc Cavazza, Fred Charles, Stephen W. Gilroy, Julie Porteous, Gábor Aranyi, Julien Cordry, Gal Raz, Jackob Nimrod Keynan, Avihay Cohen, Gilan Jackont, Yael Jacob, Eyal Soreq, Ilana Klovatch, Talma Hendler]
+  venue: International Journal of Virtual Reality 15(1), 48–60
+  year: 2015
+  group: bci
+  kind: journal
+  doi: https://doi.org/10.20870/ijvr.2015.15.1.2868
+  openUrl: https://ijvr.eu/article/download/2868/8926
+  selected: false

@@ -93,3 +93,26 @@ test('nameInHeaderGoesHome', async ({ page }) => {
   await home.click();
   await expect(page).toHaveURL('/');
 });
+
+test('menuHasResearch', async ({ page }) => {
+  await page.goto('/');
+  await page.keyboard.press('4');
+  await expect(page.locator(prompt)).toHaveText('cat research.md');
+  await expect(page).toHaveURL('/research/');
+});
+
+test('noJsMenuHasResearch', async ({ browser }) => {
+  const ctx = await browser.newContext({ javaScriptEnabled: false });
+  const page = await ctx.newPage();
+  await page.goto('/');
+  await expect(page.getByRole('link', { name: '4. research' })).toHaveAttribute('href', '/research/');
+  await ctx.close();
+});
+
+test('menuFitsPhoneWidth', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 800 });
+  await page.goto('/');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  const menu = (await page.getByRole('navigation', { name: 'menu' }).boundingBox())!;
+  expect(menu.x + menu.width).toBeLessThanOrEqual(390);
+});

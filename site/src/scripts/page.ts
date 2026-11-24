@@ -47,6 +47,8 @@ export interface PageOptions {
   promptEl?: HTMLElement;
   /** Focus this (e.g. the contact form's first field) instead of [ back ] once typing finishes. */
   focusAfterTyping?: HTMLElement | null;
+  /** Hidden while the content types, then shown all at once (e.g. a long list below it). */
+  revealAfterTyping?: HTMLElement[];
 }
 
 /** Content pages: type the content, then the footer actions become selectable. */
@@ -67,12 +69,15 @@ export function initPage(opts: PageOptions): { destroy(): void } {
   const typing = opts.contentEl
     ? typeNodes(opts.contentEl, { ...CONTENT_TYPING, reducedMotion: opts.reducedMotion })
     : null;
+  const later = typing ? (opts.revealAfterTyping ?? []) : [];
+  later.forEach((el) => el.classList.add('hidden'));
 
   let list: ReturnType<typeof createSelectableList> | undefined;
   let command: ReturnType<typeof runCommand> | undefined;
 
   const onTyped = () => {
     typed = true;
+    later.forEach((el) => el.classList.remove('hidden'));
     if (opts.focusAfterTyping) opts.focusAfterTyping.focus();
     else if (!opts.listEl) focusAction();
     if (opts.listEl && opts.promptEl) {

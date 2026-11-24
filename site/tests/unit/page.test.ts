@@ -74,6 +74,27 @@ describe('initPage', () => {
     expect(links()[1].classList.contains('sel')).toBe(true);
   });
 
+  it('revealsAfterTypingWhenDone', async () => {
+    const later = document.createElement('section');
+    document.body.append(later);
+    page = initPage({ contentEl: content, actionsEl: actions, defaultAction: 1, navigate, reducedMotion: false, revealAfterTyping: [later] });
+    expect(later.classList.contains('hidden')).toBe(true);
+    await vi.runAllTimersAsync();
+    expect(later.classList.contains('hidden')).toBe(false);
+  });
+
+  it('keySkipsStraightToReveal', async () => {
+    const later = document.createElement('section');
+    document.body.append(later);
+    page = initPage({ contentEl: content, actionsEl: actions, defaultAction: 1, navigate, reducedMotion: false, revealAfterTyping: [later] });
+    vi.advanceTimersByTime(8);
+    expect(later.classList.contains('hidden')).toBe(true);
+    key('x');
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(later.classList.contains('hidden')).toBe(false);
+  });
+
   it('anyKeyFinishesTyping', async () => {
     start();
     vi.advanceTimersByTime(8);

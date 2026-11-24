@@ -1,0 +1,90 @@
+---
+import { getCollection } from 'astro:content';
+import Publication from '../components/Publication.astro';
+import Terminal from '../layouts/Terminal.astro';
+import { GROUPS } from '../lib/publications';
+
+const pubs = (await getCollection('publications')).map((e) => e.data);
+const thesis = pubs.find((p) => p.kind === 'thesis')!;
+const selected = pubs.filter((p) => p.selected && p.kind !== 'thesis').sort((a, b) => a.order! - b.order!);
+const groups = GROUPS.map((g) => ({
+  ...g,
+  pubs: pubs.filter((p) => p.group === g.id).sort((a, b) => b.year - a.year),
+}));
+
+const actions = [
+  { label: '[ thesis.pdf ]', href: thesis.openUrl!, download: true },
+  { label: '[ back ]', href: '/' },
+];
+---
+
+<Terminal title="Research · Steve Gilroy" command="cat research.md" actions={actions} defaultAction={0}>
+  <div class="content research" data-content>
+    <h2>PhD, Human-Computer Interaction</h2>
+    <p>
+      <a href={thesis.openUrl}>{thesis.title}</a><br />
+      <span class="dim">University of York, Department of Computer Science</span><br />
+      <span class="dim">Supervised by Prof. Michael Harrison · funded by the EPSRC through the DIRC project</span>
+    </p>
+    <p>{thesis.summary}</p>
+  </div>
+
+  <!-- Not typed out (about 18 seconds with author lists): shown whole once the PhD block has typed. -->
+  <section class="content research" data-after-typing>
+    <h2>Selected papers</h2>
+    <ol class="pubs" data-selected>
+      {selected.map((pub) => <Publication pub={pub} withSummary />)}
+    </ol>
+  </section>
+
+  <details class="content research all" data-after-typing>
+    <summary>All publications ({pubs.length})</summary>
+    {
+      groups.map((g) => (
+        <section>
+          <h3>
+            {g.heading} <span class="dim">· {g.period}</span>
+          </h3>
+          <ul class="pubs">
+            {g.pubs.map((pub) => (
+              <Publication pub={pub} />
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </details>
+</Terminal>
+
+<style>
+  .research h2,
+  .research h3 {
+    font-size: 1em;
+    font-weight: normal;
+    margin: 1.2em 0 0.5em;
+  }
+
+  .research h2::before {
+    content: '## ';
+    color: var(--dim);
+  }
+
+  .research h3::before {
+    content: '### ';
+    color: var(--dim);
+  }
+
+  .pubs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .all {
+    margin-top: 1.5em;
+  }
+
+  .all summary {
+    cursor: pointer;
+  }
+</style>

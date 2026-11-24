@@ -1,0 +1,62 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { authorParts, primaryLink } from '../lib/publications';
+
+interface Props {
+  pub: CollectionEntry<'publications'>['data'];
+  /** Show the plain-English summary (selected papers only). */
+  withSummary?: boolean;
+}
+
+const { pub, withSummary = false } = Astro.props;
+const href = primaryLink(pub);
+// A separate publisher link, when the title already points at a free copy.
+const publisher = pub.doi && pub.doi !== href ? pub.doi : undefined;
+const authors = authorParts(pub.authors);
+---
+
+<li class="pub">
+  <span class="title">{href ? <a href={href}>{pub.title}</a> : pub.title}</span>
+  <span class="authors dim">
+    {authors.map((a, i) => (
+      <>
+        {i > 0 && ', '}
+        {a.me ? <b>{a.name}</b> : a.name}
+      </>
+    ))}
+  </span>
+  <span class="venue dim">
+    {[pub.venue && (pub.venueNote ? `${pub.venue}, ${pub.venueNote}` : pub.venue), pub.year].filter(Boolean).join(' · ')}
+    {publisher && (
+      <>
+        {' · '}
+        <a href={publisher}>publisher</a>
+      </>
+    )}
+  </span>
+  {withSummary && pub.summary && <span class="summary">{pub.summary}</span>}
+</li>
+
+<style>
+  .pub {
+    margin: 0 0 0.9em;
+  }
+
+  .pub > span {
+    display: block;
+  }
+
+  .authors b {
+    color: var(--fg);
+    font-weight: normal;
+  }
+
+  .summary {
+    margin-top: 0.2em;
+  }
+
+  /* Long titles and URLs wrap instead of widening the page. */
+  .pub {
+    overflow-wrap: anywhere;
+  }
+</style>
