@@ -29,15 +29,15 @@ const actions = [
     <p>{thesis.summary}</p>
   </div>
 
-  <!-- Not typed out: with author lists, the papers would take about 18 seconds to type. -->
-  <section class="content research">
+  <!-- Not typed out (about 18 seconds with author lists): shown whole once the PhD block has typed. -->
+  <section class="content research" data-after-typing>
     <h2>Selected papers</h2>
     <ol class="pubs" data-selected>
       {selected.map((pub) => <Publication pub={pub} withSummary />)}
     </ol>
   </section>
 
-  <details class="content research all">
+  <details class="content research all" data-after-typing>
     <summary>All publications ({pubs.length})</summary>
     {
       groups.map((g) => (

@@ -86,3 +86,13 @@ test('readableWithoutJs', async ({ browser }) => {
   await expect(page.getByText('All publications (29)')).toBeVisible();
   await ctx.close();
 });
+
+test('papersAppearAfterPhdTypes', async ({ page }) => {
+  await page.goto('/research/');
+  // The PhD block takes a few seconds to type; the papers wait for it.
+  await expect(page.locator('[data-selected]')).toBeHidden();
+  await expect(page.getByText('All publications (29)')).toBeHidden();
+  await typed(page);
+  await expect(page.locator('[data-selected]')).toBeVisible();
+  await expect(page.getByText('All publications (29)')).toBeVisible();
+});
