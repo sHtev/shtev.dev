@@ -97,8 +97,8 @@
   order: 7
   summary: >-
     CrossFlow, a public display for finding your way around a building, which shows several people's
-    directions at once and uses a cue in a second sense to tell each person which ones are theirs. In early
-    studies people navigated better than with maps, and with less mental effort.
+    directions at once: each person's phone buzzes in time with the column and row of the display that holds
+    their information. In early studies people navigated better than with maps, and with less mental effort.
 
 - id: crossboard-2007
   title: "CROSSBOARD: Crossmodal Access of Dense Public Displays"
