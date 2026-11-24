@@ -21,6 +21,7 @@
 - id: interaction-style-2002
   title: Using Interaction Style to Develop User Interfaces for Multiple Devices
   authors: [Stephen W. Gilroy, Michael D. Harrison]
+  venue: DIRC (Dependability Interdisciplinary Research Collaboration) project paper
   year: 2002
   group: phd
   kind: paper
@@ -74,7 +75,7 @@
 # --- Crossmodal and public displays (Newcastle, with Patrick Olivier) ---
 - id: crossmodal-attention-2006
   title: Crossmodal Attention in Public-Private Displays
-  authors: [Patrick L. Olivier, Stephen W. Gilroy, Han Cao, Dan Jackson, Christian Kray]
+  authors: [Patrick L. Olivier, Stephen W. Gilroy, Han Cao, Daniel G. Jackson, Christian Kray]
   venue: ACS/IEEE International Conference on Pervasive Services (ICPS 2006)
   year: 2006
   group: crossmodal
@@ -85,7 +86,7 @@
 
 - id: crossmodal-ambient-displays-2007
   title: Crossmodal Ambient Displays
-  authors: [Patrick L. Olivier, Han Cao, Stephen W. Gilroy, Dan Jackson]
+  authors: [Patrick L. Olivier, Han Cao, Stephen W. Gilroy, Daniel G. Jackson]
   venue: "People and Computers XX: Engage (HCI 2006), Springer"
   year: 2007
   group: crossmodal
@@ -95,12 +96,13 @@
   selected: true
   order: 7
   summary: >-
-    Large public displays that use sound as well as visuals to draw a passer-by's attention to the
-    information meant for them.
+    CrossFlow, a public display for finding your way around a building, which shows several people's
+    directions at once and uses a cue in a second sense to tell each person which ones are theirs. In early
+    studies people navigated better than with maps, and with less mental effort.
 
 - id: crossboard-2007
   title: "CROSSBOARD: Crossmodal Access of Dense Public Displays"
-  authors: [Stephen W. Gilroy, Patrick L. Olivier, Han Cao, Dan Jackson, Christian Kray, Daniel Lin]
+  authors: [Stephen W. Gilroy, Patrick L. Olivier, Han Cao, Daniel G. Jackson, Christian Kray, Daniel Lin]
   venue: Newcastle University School of Computing Science technical report
   year: 2007
   group: crossmodal
@@ -269,12 +271,14 @@
 # --- Brain-computer interfaces and neurofeedback (Teesside, with Marc Cavazza and the Tel Aviv team) ---
 - id: bci-narrative-2013
   title: A Brain-Computer Interface to a Plan-Based Narrative
-  authors: [Stephen W. Gilroy, Julie Porteous, Fred Charles, Marc Cavazza, Eyal Soreq, Gal Raz, Limor Ikar, Ayelet Or-Borichev, Udi Ben-Arie, Ilana Klovatch, Talma Hendler]
+  authors: [Stephen W. Gilroy, Julie Porteous, Fred Charles, Marc Cavazza, Eyal Soreq, Gal Raz, Limor Ikar, Ayelet Or-Borichov, Udi Ben-Arie, Ilana Klovatch, Talma Hendler]
   venue: International Joint Conference on Artificial Intelligence (IJCAI 2013)
   venueNote: one of the leading international AI conferences
   year: 2013
   group: bci
   kind: paper
+  doi: https://doi.org/10.5555/2540128.2540415
+  openUrl: https://ijcai.org/proceedings/2013/0295.pdf
   selected: true
   order: 1
   summary: >-
