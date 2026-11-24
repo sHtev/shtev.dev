@@ -48,3 +48,9 @@ test('portraitDoesNotJumpWhileTextTypes', async ({ page }) => {
   expect(after.x).toBe(before.x);
   expect(await page.evaluate(() => window.scrollY)).toBe(0);
 });
+
+test('aboutLinksToResearch', async ({ page }) => {
+  await page.goto('/about/');
+  await expect(page.getByRole('link', { name: '[ back ]' })).toHaveClass(/sel/); // typing finished
+  await expect(page.getByRole('link', { name: 'a PhD from the University of York' })).toHaveAttribute('href', '/research/');
+});
